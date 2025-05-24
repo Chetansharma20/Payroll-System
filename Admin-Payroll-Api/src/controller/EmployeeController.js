@@ -1,5 +1,5 @@
 import { Employee } from "../models/EmployeeSchema.js";
-
+import bcrypt from "bcryptjs";
 
 
 // add company
@@ -11,8 +11,11 @@ let AddEmployee = async (req, res)=>
     try
     {
         let filepath = req.file.path.replace("\\","/")
-
-        let result =  await Employee.create({...req.body, EmployeePhoto:filepath})
+       let salt  = await bcrypt.genSalt(10)
+        let encryptPassword = await bcrypt.hash(reqData.EmployeePassword, salt)
+        
+        // let result =  await Company.create({...reqData, CompanyPassword:encryptPassword})
+        let result =  await Employee.create({...reqData, EmployeePhoto:filepath, EmployeePassword:encryptPassword})
 
         res.status(200).json({
             data: result,
@@ -27,6 +30,43 @@ let AddEmployee = async (req, res)=>
     }
 
 
+}
+
+let EmployeeLogin = async(req,res)=>
+{
+    
+    try{
+    let { EmployeeEmail, EmployeePassword } = req.body;
+    let logedUser = await Employee.findOne({ EmployeeEmail }).populate("CompanyId")
+    console.log(logedUser)
+    if (!logedUser) 
+    {
+        return res.status(400).json({
+            message: "User Not Registered"
+        })
+        
+    }
+    let isValidPassword = await bcrypt.compare(EmployeePassword, logedUser.EmployeePassword);
+
+if(!isValidPassword) {
+    return res.status(400).json({
+        message:"Invalid Password"
+    });
+}
+else
+{
+return res.status(200).json({
+    data: logedUser,
+    message:"Login Successfull"
+})
+}
+}
+catch(error)
+{
+    console.log(error)
+    res.status(500).json({message:"Internal server error", error})
+
+}
 }
 //fetch company
     let fetchEmployee= async (req,res)=>
@@ -46,10 +86,10 @@ let AddEmployee = async (req, res)=>
     }
     let UpdateEmployee = async (req,res)=>
             {
-           let{EmployeeId,EmployeeDesignation } = req.body
+           let{EmployeeID,EmployeeDesignation } = req.body
                 try
                 {
-                    let result = await Employee.findByIdAndUpdate({_id:EmployeeId},
+                    let result = await Employee.findByIdAndUpdate({_id:EmployeeID},
                         {EmployeeDesignation:EmployeeDesignation},
                         {new:true}
                     )
@@ -98,4 +138,4 @@ let AddEmployee = async (req, res)=>
                 res.status(500).json(error)
             }
         }
-export {AddEmployee, fetchEmployee, UpdateEmployee, DeleteEmployee, getEmployeeByCompany}
+export {AddEmployee, fetchEmployee, UpdateEmployee, DeleteEmployee, getEmployeeByCompany, EmployeeLogin}

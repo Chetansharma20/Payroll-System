@@ -26,15 +26,17 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const Leave = () => {
-  const { companyData } = useSelector((state) => state.user);
-  const [employees, setEmployees] = useState([]);
-  const [EmployeeId, setEmployeeId] = useState('');
+  const { EmployeeData } = useSelector((state) => state.user);
+  console.log(EmployeeData.CompanyId)
+  
+  // const [employees, setEmployees] = useState([]);
+  // const [EmployeeId, setEmployeeId] = useState('');
   const [leaveData, setLeaveData] = useState([]);
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
   const [openDialog, setopenDialog] = useState(false);
-  const [selectMonth, setSelectedMonth] = useState(dayjs());
-  const [selectYear, setSelectedYear] = useState(dayjs());
+  // const [selectMonth, setSelectedMonth] = useState(dayjs());
+  // const [selectYear, setSelectedYear] = useState(dayjs());
 
   const openAddDialog = () => setopenDialog(true);
   const closeAddDialog = () => setopenDialog(false);
@@ -46,14 +48,17 @@ const Leave = () => {
     const FormattedFrom = fromDate.format('YYYY-MM-DD');
     const FormattedTo = toDate.format('YYYY-MM-DD');
 
+   
     try {
       const leave = await axios.post('http://localhost:5000/api/addleave', {
         ...reqdata,
-        CompanyId: companyData._id,
-        EmployeeID: EmployeeId,
+        // CompanyId: companyData._id,
+        EmployeeID: EmployeeData._id,
         FromDate: FormattedFrom,
-        ToDate: FormattedTo
+        ToDate: FormattedTo,
+        CompanyId: EmployeeData.CompanyId
       });
+      console.log(leave)
       alert('Leave added');
       setopenDialog(false);
     } catch (error) {
@@ -63,10 +68,11 @@ const Leave = () => {
   };
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchLeaves = async () => {
       try {
-        const response = await axios.post('http://localhost:5000/api/getemployeebycompany', {
-          CompanyId: companyData._id
+        const response = await axios.post('http://localhost:5000/api/fetchleavebyemployeeid', {
+          EmployeeID: EmployeeData._id,
+          
         });
 
         const formattedData = response.data.data.map((emp) => ({
@@ -75,49 +81,49 @@ const Leave = () => {
           _id: emp._id
         }));
 
-        setEmployees(formattedData);
+        setLeaveData(formattedData);
       } catch (error) {
         console.error('Failed to fetch employees:', error);
       }
     };
 
-    if (companyData?._id) {
-      fetchEmployees();
+    if (EmployeeData?._id) {
+      fetchLeaves();
     }
-  }, [companyData]);
+  }, [EmployeeData]);
 
-  useEffect(() => {
-    const fetchLeave = async () => {
-      if (!EmployeeId || !companyData?._id) {
-        setLeaveData([]);
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchLeave = async () => {
+  //     if (!EmployeeId || !companyData?._id) {
+  //       setLeaveData([]);
+  //       return;
+  //     }
 
-      const month = selectMonth?.format('MM');
-      const year = selectYear?.format('YYYY');
+  //     const month = selectMonth?.format('MM');
+  //     const year = selectYear?.format('YYYY');
 
-      try {
-        const url =
-          month && year
-            ? 'http://localhost:5000/api/fetchleavebymonthandyear'
-            : 'http://localhost:5000/api/fetchleavebycompanyid';
+  //     try {
+  //       const url =
+  //         month && year
+  //           ? 'http://localhost:5000/api/fetchleavebymonthandyear'
+  //           : 'http://localhost:5000/api/fetchleavebycompanyid';
 
-        const response = await axios.post(url, {
-          EmployeeID: EmployeeId,
-          month,
-          year,
-          CompanyId: companyData._id
-        });
+  //       const response = await axios.post(url, {
+  //         EmployeeID: EmployeeId,
+  //         month,
+  //         year,
+  //         CompanyId: companyData._id
+  //       });
 
-        setLeaveData(response.data.data);
-      } catch (error) {
-        console.error('Error fetching attendance data:', error);
-        setLeaveData([]);
-      }
-    };
+  //       setLeaveData(response.data.data);
+  //     } catch (error) {
+  //       console.error('Error fetching attendance data:', error);
+  //       setLeaveData([]);
+  //     }
+  //   };
 
-    fetchLeave();
-  }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
+  //   fetchLeave();
+  // }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
 
   const columns = [
     {
@@ -137,6 +143,12 @@ const Leave = () => {
       headerName: 'To Date',
       flex: 1,
       renderCell: (params) => dayjs(params.row.ToDate).format('YYYY-MM-DD')
+    },
+    {
+      field: 'LeaveStatus',
+      headerName: 'status',
+      flex: 1,
+      // renderCell: (params) => dayjs(params.row.ToDate).format('YYYY-MM-DD')
     }
   ];
 
@@ -153,11 +165,11 @@ const Leave = () => {
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker views={['month']} value={selectMonth} onChange={setSelectedMonth} label="Select Month" />
             <DatePicker views={['year']} value={selectYear} onChange={setSelectedYear} label="Select Year" />
-          </LocalizationProvider>
-
+          </LocalizationProvider> */}
+{/* 
           <Autocomplete
             options={employees}
             getOptionLabel={(option) => option.EmployeeName || ''}
@@ -165,7 +177,7 @@ const Leave = () => {
             onChange={(event, newValue) => setEmployeeId(newValue ? newValue._id : '')}
             sx={{ minWidth: 250 }}
             renderInput={(params) => <TextField {...params} label="Select Employee" />}
-          />
+          /> */}
 
           <Button variant="contained" sx={{ backgroundColor: '#2980b9' }} onClick={openAddDialog}>
             Add Leave
@@ -185,13 +197,13 @@ const Leave = () => {
         >
           <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>Add Leave</DialogTitle>
           <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Autocomplete
+            {/* <Autocomplete
               options={employees}
               getOptionLabel={(option) => option.EmployeeName || ''}
               value={employees.find((emp) => emp._id === EmployeeId) || null}
               onChange={(event, newValue) => setEmployeeId(newValue ? newValue._id : '')}
               renderInput={(params) => <TextField {...params} label="Select Employee" fullWidth required />}
-            />
+            /> */}
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker

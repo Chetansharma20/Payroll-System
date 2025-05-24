@@ -21,11 +21,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
-const AttendenceTrack = () => {
-  const { companyData } = useSelector((state) => state.user);
-  const [EmployeeId, setEmployeeId] = useState('');
+const Attendences = () => {
+  const { EmployeeData } = useSelector((state) => state.user);
+  // const [EmployeeId, setEmployeeId] = useState('');
   const [attendanceData, setAttendanceData] = useState([]);
-  const [employees, setEmployees] = useState([]);
+  // const [employees, setEmployees] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [inPunch, setInPunch] = useState('');
@@ -33,12 +33,12 @@ const AttendenceTrack = () => {
   const [selectMonth, setSelectedMonth] = useState(dayjs());
   const [selectYear, setSelectedYear] = useState(dayjs());
 
-  // Fetch employees
+ 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchAttendance = async () => {
       try {
-        const response = await axios.post("http://localhost:5000/api/getemployeebycompany", {
-          CompanyId: companyData._id
+        const response = await axios.post("http://localhost:5000/api/fetchattendancebyemployeeid", {
+          EmployeeID: EmployeeData._id
         });
 
         const formattedData = response.data.data.map(emp => ({
@@ -47,42 +47,42 @@ const AttendenceTrack = () => {
           _id: emp._id
         }));
 
-        setEmployees(formattedData);
+        setAttendanceData(formattedData);
       } catch (error) {
         console.error("Failed to fetch employees:", error);
       }
     };
 
-    if (companyData?._id) {
-      fetchEmployees();
+    if (EmployeeData?._id) {
+      fetchAttendance();
     }
-  }, [companyData]);
+  }, [EmployeeData]);
 
   // Fetch attendance
-  useEffect(() => {
-    const fetchAttendance = async () => {
-      if (!EmployeeId || !companyData?._id) {
-        setAttendanceData([]);
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchAttendance = async () => {
+  //     if (!EmployeeId || !companyData?._id) {
+  //       setAttendanceData([]);
+  //       return;
+  //     }
 
-      const month = selectMonth?.format('MM');
-      const year = selectYear?.format('YYYY');
+  //     const month = selectMonth?.format('MM');
+  //     const year = selectYear?.format('YYYY');
 
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/fetchattendancebymonthandyear",
-          { EmployeeID: EmployeeId, month, year, CompanyId: companyData._id }
-        );
-        setAttendanceData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching attendance data:", error);
-        setAttendanceData([]);
-      }
-    };
+  //     try {
+  //       const response = await axios.post(
+  //         "http://localhost:5000/api/fetchattendancebymonthandyear",
+  //         { EmployeeID: EmployeeId, month, year, CompanyId: companyData._id }
+  //       );
+  //       setAttendanceData(response.data.data);
+  //     } catch (error) {
+  //       console.error("Error fetching attendance data:", error);
+  //       setAttendanceData([]);
+  //     }
+  //   };
 
-    fetchAttendance();
-  }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
+  //   fetchAttendance();
+  // }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
 
   const handleOpenDialog = (row) => {
     setSelectedRow(row);
@@ -140,7 +140,7 @@ const AttendenceTrack = () => {
         {/* Filters */}
         <Grid container spacing={2} alignItems="center" mb={3}>
           <Grid item xs={12} sm={4} md={3}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 views={['month']}
                 label="Select Month"
@@ -159,10 +159,10 @@ const AttendenceTrack = () => {
                 onChange={(newValue) => setSelectedYear(newValue)}
                 renderInput={(params) => <TextField fullWidth {...params} />}
               />
-            </LocalizationProvider>
+            </LocalizationProvider> */}
           </Grid>
           <Grid item xs={12} sm={4} md={3}>
-            <Autocomplete sx={{width:'180px'}}
+            {/* <Autocomplete sx={{width:'180px'}}
               options={employees}
               getOptionLabel={(option) => option.EmployeeName || ''}
               value={employees.find(emp => emp._id === EmployeeId) || null}
@@ -172,7 +172,7 @@ const AttendenceTrack = () => {
               renderInput={(params) => (
                 <TextField {...params} label="Select Employee" fullWidth />
               )}
-            />
+            /> */}
           </Grid>
         </Grid>
 
@@ -239,4 +239,4 @@ const AttendenceTrack = () => {
   );
 };
 
-export default AttendenceTrack;
+export default Attendences;

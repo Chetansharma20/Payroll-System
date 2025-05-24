@@ -19,6 +19,7 @@ let EmployeeSchema = mongoose.Schema({
         }
        
     },
+    EmployeePassword: {type:String},
     EmployeeDOB: {type: Date,},
     EmployeeJoiningDate:{type: Date,},
     EmployeeDesignation:{type:String,},

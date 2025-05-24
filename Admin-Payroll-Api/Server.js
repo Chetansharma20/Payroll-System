@@ -13,6 +13,8 @@ import cors from "cors"
 import { DepartmnetRouter } from "./src/routes/DepartmentRoutes.js";
 import { DesignationRouter } from "./src/routes/DesignationRoutes.js";
 import { OverviewRouter } from "./src/routes/overviewRouter.js";
+import { SalarySettingsRouter } from "./src/routes/SalarySettingsRouter.js";
+import { SalarySlipRouter } from "./src/routes/SalarySlipRouter.js";
 
 
 let Server = express()
@@ -37,6 +39,8 @@ Server.use("/api", BankRouter )
 Server.use("/api", DepartmnetRouter)
 Server.use("/api", DesignationRouter)
 Server.use("/api", OverviewRouter)
+Server.use("/api", SalarySettingsRouter)
+Server.use("/api", SalarySlipRouter)
 Server.use("/UploadImages", express.static("UploadImages"))
  Server.listen(5000,()=>
 {

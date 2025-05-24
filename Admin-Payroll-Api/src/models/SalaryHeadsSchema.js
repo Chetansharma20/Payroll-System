@@ -20,6 +20,13 @@ let SalaryHeadsSchema = mongoose.Schema({
         }
 
     },
+    DependOn:{
+        type:String
+    },
+    isActive:{
+        type:Boolean
+    },
+
       CompanyId:{type:mongoose.Schema.Types.ObjectId, ref:"Company"},
 },{timestamps:true})
-export const SalaryHeads = mongoose.model("Salary Heads", SalaryHeadsSchema)
+export const SalaryHeads = mongoose.model("SalaryHeads", SalaryHeadsSchema)

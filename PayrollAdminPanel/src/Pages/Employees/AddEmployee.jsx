@@ -142,6 +142,7 @@ useEffect(()=>
     <TextField size="small" label="City" name="EmployeeCity" type="text" required />
     <TextField size="small" label="State" name="EmployeeState" type="text" required />
     <TextField size="small" label="Pincode" name="EmployeePincode" type="number" required />
+    <TextField size="small" label="Password" name="EmployeePassword" type="password" required />
     <FormControl>
       <FormLabel>Gender</FormLabel>
       <RadioGroup row name="EmployeeGender">

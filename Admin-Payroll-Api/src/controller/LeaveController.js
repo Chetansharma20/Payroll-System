@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Employee } from "../models/EmployeeSchema.js";
+// import { Employee } from "../models/EmployeeSchema.js";
 import { Leave } from "../models/LeaveSchema.js";
 
 
@@ -67,7 +67,27 @@ let AddLeave = async (req, res)=>
 
     }
     
-   
+    let fetchLeaveByEmployeeId = async (req,res)=>
+    {
+        try
+        {
+            let { EmployeeID} = req.body
+            let result = await Leave.find({ EmployeeID: EmployeeID }).populate("EmployeeID", "EmployeeName")
+            // .where("CompanyId")
+            // .eq(CompanyId)
+            res.status(200).json(
+               { data: result,
+                message:"leaves by employee"
+         } )
+
+        }
+        catch(error)
+        {
+            res.status(500).json(error)
+
+        }
+
+    }
 
 let  fetchLeaveByMonthAndYear = async (req, res) => {
   try {
@@ -136,4 +156,4 @@ let  fetchLeaveByMonthAndYear = async (req, res) => {
 };
 
      
-export {AddLeave, fetchLeave, fetchLeaveByCompanyId, fetchLeaveByMonthAndYear}
+export {AddLeave, fetchLeave, fetchLeaveByCompanyId, fetchLeaveByMonthAndYear, fetchLeaveByEmployeeId}

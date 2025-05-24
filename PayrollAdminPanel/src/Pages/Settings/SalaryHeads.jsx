@@ -102,46 +102,65 @@ const SalaryHeads = () => {
         />
       </Box>
 
-      <Dialog open={openDialog} onClose={closeAddDialog} maxWidth="sm" fullWidth>
-        <Box
-          component="form"
-          onSubmit={SubmitSalaryHeads}
-          sx={{
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            width: '500px',
-          }}
-        >
-            <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-          <Typography variant="h6">Add Salary Head</Typography>
-          </DialogTitle>
-          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }} >
+<Dialog
+      open={openDialog}
+      onClose={closeAddDialog}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          backgroundColor: '#ecf0f1', // light gray background
+          color: '#2c3e50', // darker text
+          borderRadius: 3,
+        },
+      }}
+    >
+      <Box
+        component="form"
+        onSubmit={SubmitSalaryHeads}
+        sx={{
+          p: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+            Add Salary Head
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             size="small"
             label="Title"
             name="SalaryHeadsTitle"
-            type="text"
+            variant="outlined"
             required
+            fullWidth
           />
+
           <TextField
             size="small"
             label="Name"
             name="ShortName"
-            type="text"
+            variant="outlined"
             required
+            fullWidth
           />
+
           <TextField
             size="small"
             label="Value"
             name="SalaryHeadsValue"
-            type="text"
+            variant="outlined"
             required
+            fullWidth
           />
 
-          <FormControl>
-            <FormLabel>Salary Heads Type</FormLabel>
+          <FormControl component="fieldset">
+            <FormLabel sx={{ color: '#2c3e50' }}>Salary Heads Type</FormLabel>
             <RadioGroup row name="SalaryHeadsType">
               <FormControlLabel
                 value="Earnings"
@@ -157,17 +176,15 @@ const SalaryHeads = () => {
           </FormControl>
 
           <FormControl size="small" fullWidth required>
-            <InputLabel id="salary-method-label">
-              Salary Calculation Method
-            </InputLabel>
+            <InputLabel id="salary-method-label">Salary Calculation Method</InputLabel>
             <Select
               labelId="salary-method-label"
               name="SalaryCalcultateMethod"
-              label="Salary Calculation Method"
               defaultValue=""
+              label="Salary Calculation Method"
             >
               <MenuItem value="">
-                {/* <em>None</em> */}
+                <em>None</em>
               </MenuItem>
               <MenuItem value="Fixed">Fixed</MenuItem>
               <MenuItem value="PF">PF</MenuItem>
@@ -175,14 +192,39 @@ const SalaryHeads = () => {
               <MenuItem value="LWF">LWF</MenuItem>
             </Select>
           </FormControl>
-          </DialogContent>
-         <DialogActions>
-                    <Button  type="submit" variant='contained' color='primary'>Submit</Button>
-                    <Button onClick={() => closeAddDialog()} variant='contained' color='error'>Close</Button>
-        
-                  </DialogActions>
-        </Box>
-      </Dialog>
+        </DialogContent>
+
+        <DialogActions sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              backgroundColor: '#3498db',
+              color: '#fff',
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: '#2980b9',
+              },
+            }}
+          >
+            Submit
+          </Button>
+          <Button
+            onClick={closeAddDialog}
+            variant="outlined"
+            sx={{
+              color: '#2c3e50',
+              borderColor: '#2c3e50',
+              '&:hover': {
+                backgroundColor: '#d0d3d4',
+              },
+            }}
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Box>
+    </Dialog>
     </Box>
   );
 };

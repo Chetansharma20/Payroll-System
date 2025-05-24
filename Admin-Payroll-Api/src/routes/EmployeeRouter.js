@@ -1,5 +1,5 @@
 import express from "express"
-import { AddEmployee, DeleteEmployee, fetchEmployee, getEmployeeByCompany, UpdateEmployee } from "../controller/EmployeeController.js"
+import { AddEmployee, DeleteEmployee, EmployeeLogin, fetchEmployee, getEmployeeByCompany, UpdateEmployee } from "../controller/EmployeeController.js"
 import { Upload } from "../MiddleWare/FileUploadMiddleWare.js"
 
 
@@ -13,4 +13,5 @@ EmployeeRouter.post("/addemployee",Upload.single("EmployeePhoto"), AddEmployee)
 EmployeeRouter.put("/updateemployee", UpdateEmployee)
 EmployeeRouter.delete("/deleteemployee", DeleteEmployee)
 EmployeeRouter.post("/getemployeebycompany", getEmployeeByCompany)
+EmployeeRouter.post("/employeelogin", EmployeeLogin)
 export {EmployeeRouter}
