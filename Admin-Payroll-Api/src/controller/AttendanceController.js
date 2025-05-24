@@ -43,12 +43,12 @@ let AddAttendance = async (req, res)=>
     
      let fetchAttendaceByEmployeeID = async(req,res)=>
      {
-        let{CompanyId, EmployeeID} = req.body
+        let{ EmployeeID, } = req.body
         try
         {
             let result  = await Attendance.find({EmployeeID:EmployeeID}).populate("EmployeeID", "EmployeeName")
-            .where("CompanyId")
-            .eq(CompanyId)
+            // .where("CompanyId")
+            // .eq(CompanyId)
             res.status(200).json({
                 data: result,
                 message:"attendance data"

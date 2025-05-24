@@ -30,8 +30,8 @@ const Attendences = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [inPunch, setInPunch] = useState('');
   const [outPunch, setOutPunch] = useState('');
-  const [selectMonth, setSelectedMonth] = useState(dayjs());
-  const [selectYear, setSelectedYear] = useState(dayjs());
+  // const [selectMonth, setSelectedMonth] = useState(dayjs());
+  // const [selectYear, setSelectedYear] = useState(dayjs());
 
  
   useEffect(() => {
@@ -113,16 +113,16 @@ const Attendences = () => {
     },
     { field: 'InPunchTime', headerName: 'Punch In', flex: 1 },
     { field: 'OutPunchTime', headerName: 'Punch Out', flex: 1 },
-    {
-      field: 'update',
-      headerName: 'Edit',
-      flex: 0.5,
-      renderCell: (params) => (
-        <IconButton onClick={() => handleOpenDialog(params.row)} color="primary">
-          <EditIcon />
-        </IconButton>
-      )
-    }
+    // {
+    //   field: 'update',
+    //   headerName: 'Edit',
+    //   flex: 0.5,
+    //   renderCell: (params) => (
+    //     <IconButton onClick={() => handleOpenDialog(params.row)} color="primary">
+    //       <EditIcon />
+    //     </IconButton>
+    //   )
+    // }
   ];
 
   const rows = attendanceData.map((entry) => ({
@@ -139,8 +139,8 @@ const Attendences = () => {
 
         {/* Filters */}
         <Grid container spacing={2} alignItems="center" mb={3}>
-          <Grid item xs={12} sm={4} md={3}>
-            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {/* <Grid item xs={12} sm={4} md={3}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 views={['month']}
                 label="Select Month"
@@ -159,10 +159,10 @@ const Attendences = () => {
                 onChange={(newValue) => setSelectedYear(newValue)}
                 renderInput={(params) => <TextField fullWidth {...params} />}
               />
-            </LocalizationProvider> */}
-          </Grid>
-          <Grid item xs={12} sm={4} md={3}>
-            {/* <Autocomplete sx={{width:'180px'}}
+            </LocalizationProvider>
+          </Grid> */}
+          {/* <Grid item xs={12} sm={4} md={3}>
+            <Autocomplete sx={{width:'180px'}}
               options={employees}
               getOptionLabel={(option) => option.EmployeeName || ''}
               value={employees.find(emp => emp._id === EmployeeId) || null}
@@ -172,8 +172,8 @@ const Attendences = () => {
               renderInput={(params) => (
                 <TextField {...params} label="Select Employee" fullWidth />
               )}
-            /> */}
-          </Grid>
+            />
+          </Grid> */}
         </Grid>
 
         {/* Attendance Table */}
@@ -188,7 +188,7 @@ const Attendences = () => {
               backgroundColor: '#fafafa',
               '& .MuiDataGrid-columnHeaders': {
                 backgroundColor: '#1976d2',
-                color: '#fff',
+                // color: '#fff',
                 fontWeight: 'bold'
               }
             }}

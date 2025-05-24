@@ -76,6 +76,19 @@ Login
 
 
 </ListItem>
+<ListItem onClick={()=> {navigate('/dashboard')
+    handleDrawerClose()
+}}>
+
+   <ListItemIcon>
+<ShoppingCartIcon/>
+   </ListItemIcon>
+    <ListItemText>
+        DashBoard
+    </ListItemText>
+
+
+</ListItem>
 
     </List>
 

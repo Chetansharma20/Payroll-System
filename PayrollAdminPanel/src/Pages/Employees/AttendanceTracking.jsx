@@ -197,7 +197,7 @@ const AttendenceTrack = () => {
       </Paper>
 
       {/* Edit Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      {/* <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Edit Attendance</DialogTitle>
         <DialogContent dividers>
           {selectedRow && (
@@ -234,7 +234,7 @@ const AttendenceTrack = () => {
             Save
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </Box>
   );
 };

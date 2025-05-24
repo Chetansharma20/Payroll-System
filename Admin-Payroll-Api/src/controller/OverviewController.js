@@ -49,6 +49,30 @@ const getDashboardCounts = async (req,res)=>
             })
         }
     } 
+    const getLeavesCountByEmployee = async (req,res)=>
+    {
+        // let { CompanyId } = req.body
+        try
+        {
+            let {EmployeeID} = req.body
+            const LeaveCount = await Leave.countDocuments({EmployeeID})
+            res.status(200).json({
+                success:true,
+                data:{
+                    Leave:LeaveCount
+                }
+            })
+        }
+        catch(error)
+        {
+            console.log(error)
+            res.status(500).json({
+                success:false,
+                message:"failed",
+                error:error.message
+            })
+        }
+    } 
      const getAttendanceCount = async (req,res)=>
     {
         // let { CompanyId } = req.body
@@ -73,4 +97,28 @@ const getDashboardCounts = async (req,res)=>
             })
         }
     } 
-    export {getDashboardCounts,getLeavesCount, getAttendanceCount}
+    const getAttendanceCountByEmployee = async (req,res)=>
+    {
+        // let { CompanyId } = req.body
+        try
+        {
+            let {EmployeeID} = req.body
+            const AttendanceCount = await Attendance.countDocuments({EmployeeID})
+            res.status(200).json({
+                success:true,
+                data:{
+                    Attendance:AttendanceCount
+                }
+            })
+        }
+        catch(error)
+        {
+            console.log(error)
+            res.status(500).json({
+                success:false,
+                message:"failed",
+                error:error.message
+            })
+        }
+    } 
+    export {getDashboardCounts,getLeavesCount, getAttendanceCount, getLeavesCountByEmployee, getAttendanceCountByEmployee}
