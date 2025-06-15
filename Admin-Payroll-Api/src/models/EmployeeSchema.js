@@ -27,10 +27,22 @@ let EmployeeSchema = mongoose.Schema({
     EmployeeType:{type:String,},
     BranchId:{type:mongoose.Schema.Types.ObjectId, ref:"Branch"},
     CompanyId:{type:mongoose.Schema.Types.ObjectId, ref:"Company"},
+    BranchName:{type:String},
 EmployeePhoto:{
     type:String
+},
+AdhaarCard:{
+    type:String
+},
+PanCard:{
+    type:String
+},
+PassBook:{
+    type:String
+},
+Degree:{
+    type:String
 }
-
  
 },{timestamps:true})
 export const Employee = mongoose.model("Employee", EmployeeSchema)

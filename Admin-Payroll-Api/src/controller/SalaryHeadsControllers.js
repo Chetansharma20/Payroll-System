@@ -1,4 +1,5 @@
 
+import mongoose from "mongoose"
 import { SalaryHeads } from "../models/SalaryHeadsSchema.js"
 
 
@@ -42,11 +43,12 @@ let AddSalaryHeads = async (req, res)=>
 
     }
 
+
 let SalaryHeadsByCompany = async(req,res)=>
 {
     try{
         let {CompanyId} = req.body
-        let result = await SalaryHeads.find({CompanyId})
+        let result = await SalaryHeads.find({ CompanyId})
         res.status(200).json(({
             data:result,
             message:"get salaryheads by company"

@@ -31,6 +31,7 @@ import Login from './Login'
 import BranchList from '../Pages/Branches/BranchList'
 import SalaryHeads from '../Pages/Settings/SalaryHeads'
 import Leave from '../Pages/Employees/Leave'
+import SalarySettings from '../Pages/Employees/SalarySettings'
 const MainContent = () => {
   return (
    <Box component="main" sx={{flexGrow:1, marginTop:10}}>
@@ -47,6 +48,7 @@ const MainContent = () => {
     <Route path='/payroll/payslip' element={<PayslipManagement/>}/>
     <Route path='/employee/addemployee' element={<AddEmployee/>}/>
     <Route path='/employee/employeelist' element={<EmployeeList/>}/>
+       <Route path='/employee/salarysetting' element={<SalarySettings/>}/>
     <Route path='/employee/departmentdesignation' element={<DepartmentsDesignation/>}/>
     <Route path='/employee/attendancetracking' element={<AttendanceTracking/>}/>
     <Route path='/employee/employeedocuments' element={<EmployeeDocuments/>}/>
@@ -65,7 +67,7 @@ const MainContent = () => {
     <Route path='/login' element={<Login/>}/>
     
 
-    <Route path='/settings/salaryheads' element={<SalaryHeads/>}/>
+    <Route path='/payroll/salaryheads' element={<SalaryHeads/>}/>
     <Route path='/employee/leave' element={<Leave/>}/>
     
 

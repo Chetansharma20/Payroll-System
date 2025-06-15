@@ -1,113 +1,111 @@
-import { Box, Paper, TextField, Typography , Button} from '@mui/material'
+import { Box, Paper, TextField, Typography, Button } from '@mui/material'
 import axios from 'axios'
-// import React from 'react'
 import { useDispatch } from 'react-redux'
-import {  useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { login } from '../Redux/UserSlice'
 
-
 const Login = () => {
-    let navigate  = useNavigate()
-    let dispatcher = useDispatch()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-    let EmployeeLogin = async (e)=>
-    {
-      e.preventDefault()
+  const EmployeeLogin = async (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    const getData = Object.fromEntries(formData.entries())
+    console.log(getData)
 
-      let formData = new FormData(e.target)
-      let getData = Object.fromEntries(formData.entries())
-      console.log(getData)
-
-      try
-      {
-      let result = await axios.post("http://localhost:5000/api/employeelogin", getData)
-        console.log(result)
-        dispatcher(login(result.data.data))
-
-        // alert('user Login')
-        navigate('/leaves')
-
-      }
-      catch(error)
-      {
-        console.log(error.response)
-      }
-
+    try {
+      const result = await axios.post("http://localhost:5000/api/employeelogin", getData)
+      console.log(result)
+      dispatch(login(result.data.data))
+      navigate('/leaves')
+    } catch (error) {
+      console.log(error.response)
     }
+  }
+
   return (
-    <>
-    <Box  sx={{
+    <Box
+      sx={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // minHeight: '100vh',
-        backgroundColor: '#FFEBEE',  // Light pink background for a soft touch
-        padding: 2,
-        width:"70vw",
-        height:'100vh'
-        ,
-        marginRight:'70px',
-        flexDirection:'column'
-      }}>
-        {/* <Paper  
-          elevation={6}
+        minHeight: '100vh',
+        background: 'linear-gradient(to right, #e0f7fa, #ffe0b2)',
+        px: 2,
+      }}
+    >
+      <Paper
+        elevation={8}
         sx={{
-          padding: 3,
+          p: 5,
           width: '100%',
-          maxWidth: 400,
-          borderRadius: 3,
-          backgroundColor: '#fff',
-        }} > */}
-            <Typography>Login</Typography>
+          maxWidth: 420,
+          borderRadius: 4,
+          backgroundColor: '#ffffff',
+        }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 'bold', color: '#4caf50' }}
+        >
+          Employee Login
+        </Typography>
 
-            <Box  component="form"
-          onSubmit={(e) => EmployeeLogin(e)}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
-            width:400,
-            padding:4,
-            backgroundColor:'white',
-            boxShadow:3,
-            borderRadius:2
-          }}>
-                <TextField type='text' label='Enter Email' variant='outlined' name='EmployeeEmail'   sx={{ marginBottom: 2 }} required  />
-                <TextField type='password' label='Enter Password' variant='outlined' name='EmployeePassword' required sx={{ marginBottom: 2 }} />
-                <Button
+        <Box
+          component="form"
+          onSubmit={EmployeeLogin}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}
+        >
+          <TextField
+            label="Email"
+            name="EmployeeEmail"
+            type="email"
+            variant="outlined"
+            required
+            fullWidth
+          />
+          <TextField
+            label="Password"
+            name="EmployeePassword"
+            type="password"
+            variant="outlined"
+            required
+            fullWidth
+          />
+          <Button
             type="submit"
             variant="contained"
             color="success"
-            fullWidth
+            size="large"
             sx={{
-              fontWeight: 'bold',
               textTransform: 'none',
-              padding: '12px',
+              fontWeight: 'bold',
+              py: 1.5,
               '&:hover': {
-                backgroundColor: '#4caf50',  // Lighter green on hover
+                backgroundColor: '#388e3c',
               },
             }}
           >
             Login
           </Button>
-          <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
+
+          {/* <Typography variant="body2" align="center">
             New User?{' '}
             <Button
               variant="text"
               size="small"
               onClick={() => navigate("/addcompany")}
-              sx={{ textTransform: 'none' }}
+              sx={{ textTransform: 'none', fontWeight: 'bold', color: '#1976d2' }}
             >
-              Register
+              Register Here
             </Button>
-          </Typography>
-            </Box>
-        {/* </Paper> */}
+          </Typography> */}
+        </Box>
+      </Paper>
     </Box>
-    
-    
-    
-    </>
   )
 }
 

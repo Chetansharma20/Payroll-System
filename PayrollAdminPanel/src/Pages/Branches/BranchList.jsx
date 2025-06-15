@@ -70,7 +70,7 @@ setAllBranches(formattedData)
         { field: 'BranchCity', headerName: 'Branch City', flex: 1,minWidth: 150 },
         { field: 'BranchState', headerName: 'Branch State', flex: 1,minWidth: 150 },
         { field: 'BranchPinCode', headerName: 'Pincode', flex: 1,minWidth: 150 },
-        { field: 'CompanyId', headerName: 'Company Id', flex: 1,minWidth: 150 },
+        // { field: 'CompanyId', headerName: 'Company Id', flex: 1,minWidth: 150 },
        
     ]
   return (
@@ -127,12 +127,13 @@ setAllBranches(formattedData)
             type="text" 
             required />
             <TextField label="Branch Pincode" 
-            name='BranchPincode' 
+            name='BranchPinCode' 
             type="text" 
             required />
             <FormControlLabel
                       control={<Checkbox checked={checked} onChange={handleChange} color="primary" />}
                       label="Is Active?"
+                      name="BranchIsActive"
                     />
               {/* <TextField onChange={(e) => setnewPrice(e.target.value)} label="Enter Updated Price" name="price" /> */}
            

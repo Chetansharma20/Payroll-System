@@ -57,8 +57,8 @@ catch(error)
           // top:80
         }}
       >
-        <Typography variant="h5" align="center" gutterBottom>
-          Add Employee
+        <Typography variant="h5" align="center" gutterBottom sx={{ fontWeight: 700, color: '#2e7d32',}}> 
+          Add Company
         </Typography>
 
         <Box

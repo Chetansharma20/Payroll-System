@@ -234,7 +234,7 @@ const Leave = () => {
                 <MenuItem value="casual">Casual</MenuItem>
               </Select>
             </FormControl>
-
+{/* 
             <FormControl>
               <FormLabel>Leave Status</FormLabel>
               <RadioGroup row name="LeaveStatus">
@@ -242,7 +242,7 @@ const Leave = () => {
                 <FormControlLabel value="approved" control={<Radio size="small" />} label="Approved" />
                 <FormControlLabel value="reject" control={<Radio size="small" />} label="Reject" />
               </RadioGroup>
-            </FormControl>
+            </FormControl> */}
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'flex-end', mt: 1 }}>

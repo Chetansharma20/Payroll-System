@@ -1,5 +1,5 @@
 import express from "express"
-import { AddSalarySettings, fetchSalarySettingsByEmployee } from "../controller/SalarySchemaController.js"
+import { AddSalarySettings, fetchSalarySettings, fetchSalarySettingsByEmployee } from "../controller/SalarySettingsController.js"
 
 
 let SalarySettingsRouter = express.Router()
@@ -9,5 +9,5 @@ let SalarySettingsRouter = express.Router()
 
 SalarySettingsRouter.post("/addsalarysettings", AddSalarySettings)
 SalarySettingsRouter.post("/fetchsalarysettingsbyemployee", fetchSalarySettingsByEmployee)
-
+SalarySettingsRouter.get("/fetchsalarysettings", fetchSalarySettings)
 export {SalarySettingsRouter}

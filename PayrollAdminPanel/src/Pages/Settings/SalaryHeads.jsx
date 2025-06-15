@@ -72,17 +72,17 @@ const SalaryHeads = () => {
 
 
   const columns = [
-    { field: 'SalaryHeadsTitle', headerName: 'Name', width: 100 },
+    { field: 'SalaryHeadsTitle', headerName: 'Name', width: 200 },
     { field: 'ShortName', headerName: 'Short Name', width: 200 },
     { field: 'SalaryHeadsType', headerName: 'Type', width: 150 },
-    { field: 'SalaryHeadsValue', headerName: 'Values', width: 150 },
+    // { field: 'SalaryHeadsValue', headerName: 'Values', width: 150 },
     { field: 'SalaryCalcultateMethod', headerName: 'Method', width: 150 },
     
   ]; // Example column data – replace with your actual column structure
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, mr:8 }}>
         <Button
           variant="contained"
           sx={{ backgroundColor: '#2980b9' }}
@@ -92,7 +92,7 @@ const SalaryHeads = () => {
         </Button>
       </Box>
 
-      <Box sx={{ height: 500, width: '100%' }}>
+      <Box sx={{ height: 500, width: '70vw' }}>
         <DataGrid
           rows={AllSalaryHeads}
           columns={columns}
@@ -150,14 +150,14 @@ const SalaryHeads = () => {
             fullWidth
           />
 
-          <TextField
+          {/* <TextField
             size="small"
             label="Value"
             name="SalaryHeadsValue"
             variant="outlined"
             required
             fullWidth
-          />
+          /> */}
 
           <FormControl component="fieldset">
             <FormLabel sx={{ color: '#2c3e50' }}>Salary Heads Type</FormLabel>

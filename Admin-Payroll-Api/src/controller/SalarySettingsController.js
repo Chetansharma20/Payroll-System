@@ -45,5 +45,21 @@ let fetchSalarySettingsByEmployee = async (req,res)=>
         }
 
     }
-    export{AddSalarySettings, fetchSalarySettingsByEmployee}
+    let fetchSalarySettings = async (req, res) =>
+    {   
+        try
+            {
+                
+                    let result = await SalarySettings.find()
+                    res.status(200).json(result)
+        
+                }
+                catch(error)
+                {
+                    res.status(500).json(error)
+        
+                }
+        
+    }
+    export{AddSalarySettings, fetchSalarySettingsByEmployee, fetchSalarySettings}
     

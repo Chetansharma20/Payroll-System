@@ -7,7 +7,7 @@ let LeaveSchema = mongoose.Schema({
     ToDate:{type:Date},
     LeaveDescription:{type:String},
     LeaveType:{type:String },
-LeaveStatus:{type:String, 
+LeaveStatus:{type:String, default: "pending",
     enum:
     {
     

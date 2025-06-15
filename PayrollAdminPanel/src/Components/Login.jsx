@@ -1,113 +1,154 @@
-import { Box, Paper, TextField, Typography , Button} from '@mui/material'
-import axios from 'axios'
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import {  useNavigate } from 'react-router-dom'
-import { login } from '../ReduxWork/UserSlice'
+import { Box, Paper, TextField, Typography, Button } from '@mui/material';
+import axios from 'axios';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../ReduxWork/UserSlice';
 
 const Login = () => {
-    let navigate  = useNavigate()
-    let dispatcher = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    let CompanyLogin = async (e)=>
-    {
-      e.preventDefault()
+  const CompanyLogin = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const getData = Object.fromEntries(formData.entries());
 
-      let formData = new FormData(e.target)
-      let getData = Object.fromEntries(formData.entries())
-      console.log(getData)
-
-      try
-      {
-      let result = await axios.post("http://localhost:5000/api/companylogin", getData)
-        console.log(result)
-        dispatcher(login(result.data.data))
-
-        // alert('user Login')
-        navigate('/employee/employeelist')
-
-      }
-      catch(error)
-      {
-        console.log(error.response)
-      }
-
+    try {
+      const result = await axios.post("http://localhost:5000/api/companylogin", getData);
+      dispatch(login(result.data.data));
+      navigate('/employee/employeelist');
+    } catch (error) {
+      console.log(error.response);
     }
+  };
+
   return (
-    <>
-    <Box  sx={{
+    <Box
+      sx={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // minHeight: '100vh',
-        backgroundColor: '#FFEBEE',  // Light pink background for a soft touch
+        height: '80vh',
+        // backgroundColor: '#f5f7fa',
         padding: 2,
-        width:"70vw",
-        height:'100vh'
-        ,
-        marginRight:'70px',
-        flexDirection:'column'
-      }}>
-        {/* <Paper  
-          elevation={6}
+        width: '70vw',
+        marginRight: '70px',
+        flexDirection: 'column',
+      }}
+    >
+      <Paper
+        elevation={8}
         sx={{
-          padding: 3,
+          
+          padding: 5,
           width: '100%',
           maxWidth: 400,
-          borderRadius: 3,
-          backgroundColor: '#fff',
-        }} > */}
-            <Typography>Login</Typography>
-
-            <Box  component="form"
-          onSubmit={(e) => CompanyLogin(e)}
+          borderRadius: 4,
+          backgroundColor: '#ffffff',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+        }}
+      >
+        <Typography
+          variant="h5"
+          align="center"
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
-            width:400,
-            padding:4,
-            backgroundColor:'white',
-            boxShadow:3,
-            borderRadius:2
-          }}>
-                <TextField type='text' label='Enter Email' variant='outlined' name='CompanyEmail'   sx={{ marginBottom: 2 }} required  />
-                <TextField type='password' label='Enter Password' variant='outlined' name='CompanyPassword' required sx={{ marginBottom: 2 }} />
-                <Button
+            fontWeight: 700,
+            marginBottom: 3,
+            color: '#2e7d32',
+          }}
+        >
+          Company Login
+        </Typography>
+
+        <Box
+          component="form"
+          onSubmit={CompanyLogin}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+        >
+          <TextField
+            label="Company Email"
+            type="email"
+            name="CompanyEmail"
+            variant="outlined"
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+              },
+              '& .MuiInputLabel-root': {
+                fontWeight: 500,
+              },
+            }}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            name="CompanyPassword"
+            variant="outlined"
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+              },
+              '& .MuiInputLabel-root': {
+                fontWeight: 500,
+              },
+            }}
+          />
+
+          <Button
             type="submit"
             variant="contained"
             color="success"
             fullWidth
             sx={{
               fontWeight: 'bold',
+              paddingY: 1.2,
               textTransform: 'none',
-              padding: '12px',
+              fontSize: '1rem',
+              borderRadius: '12px',
               '&:hover': {
-                backgroundColor: '#4caf50',  // Lighter green on hover
+                backgroundColor: '#388e3c',
               },
             }}
           >
             Login
           </Button>
-          <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
-            New User?{' '}
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => navigate("/addcompany")}
-              sx={{ textTransform: 'none' }}
-            >
-              Register
-            </Button>
-          </Typography>
-            </Box>
-        {/* </Paper> */}
-    </Box>
-    
-    
-    
-    </>
-  )
-}
+        </Box>
 
-export default Login
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{
+            marginTop: 3,
+            color: 'text.secondary',
+            fontWeight: 500,
+          }}
+        >
+          New User?{' '}
+          <Button
+            variant="text"
+            size="small"
+            onClick={() => navigate("/addcompany")}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 600,
+              color: '#2e7d32',
+              '&:hover': {
+                textDecoration: 'underline',
+                backgroundColor: 'transparent',
+              },
+            }}
+          >
+            Register here
+          </Button>
+        </Typography>
+      </Paper>
+    </Box>
+  );
+};
+
+export default Login;

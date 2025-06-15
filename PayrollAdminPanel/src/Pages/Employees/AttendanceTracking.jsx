@@ -103,6 +103,8 @@ const AttendenceTrack = () => {
       field: 'EmployeeID',
       headerName: 'Employee Name',
       flex: 1,
+        valueGetter: (params) => params.row?.EmployeeID?.EmployeeName || 'N/A',
+
       renderCell: (params) => params.row?.EmployeeID?.EmployeeName || 'N/A'
     },
     {
@@ -132,7 +134,7 @@ const AttendenceTrack = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3}}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3,}}>
         <Typography variant="h5" fontWeight="bold" gutterBottom>
           Attendance Tracking
         </Typography>
@@ -177,7 +179,7 @@ const AttendenceTrack = () => {
         </Grid>
 
         {/* Attendance Table */}
-        <Box sx={{ height: 450 }}>
+        <Box sx={{ height: 450, }}>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -188,7 +190,7 @@ const AttendenceTrack = () => {
               backgroundColor: '#fafafa',
               '& .MuiDataGrid-columnHeaders': {
                 backgroundColor: '#1976d2',
-                color: '#fff',
+                // color: '#fff',
                 fontWeight: 'bold'
               }
             }}

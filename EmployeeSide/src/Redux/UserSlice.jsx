@@ -16,7 +16,7 @@ let userSlice = createSlice({
         },
          logout:(state)=>
         {
-            state.companyData = {};
+            state.EmployeeData = {};
             state.isLogin = false
         
         }

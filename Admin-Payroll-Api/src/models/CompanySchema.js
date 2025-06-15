@@ -13,6 +13,6 @@ let CompanySchema = mongoose.Schema({
         default:false
     },
     CompanyPassword:{type:String}
- 
+  
 },{timestamps:true})
 export const Company = mongoose.model("Company", CompanySchema)

@@ -10,7 +10,7 @@ let SalaryHeadsSchema = mongoose.Schema({
             message: "select correct salary head type"
         }
     },
-    SalaryHeadsValue:{type:Number},
+    // SalaryHeadsValue:{type:Number},
     SalaryCalcultateMethod:
     {
         type: String,
@@ -20,6 +20,7 @@ let SalaryHeadsSchema = mongoose.Schema({
         }
 
     },
+  
     DependOn:{
         type:String
     },
@@ -27,6 +28,6 @@ let SalaryHeadsSchema = mongoose.Schema({
         type:Boolean
     },
 
-      CompanyId:{type:mongoose.Schema.Types.ObjectId, ref:"Company"},
+   CompanyId:{type:mongoose.Schema.Types.ObjectId, ref:"Company"}
 },{timestamps:true})
 export const SalaryHeads = mongoose.model("SalaryHeads", SalaryHeadsSchema)

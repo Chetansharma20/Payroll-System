@@ -1,4 +1,5 @@
 import {
+  Alert,
   Autocomplete,
   Button,
   Dialog,
@@ -13,6 +14,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Snackbar,
   TextField,
   Typography
 } from '@mui/material';
@@ -33,12 +35,21 @@ const Leave = () => {
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
   const [openDialog, setopenDialog] = useState(false);
+   const [openDialog1, setopenDialog1] = useState(false);
   const [selectMonth, setSelectedMonth] = useState(dayjs());
   const [selectYear, setSelectedYear] = useState(dayjs());
-
+  const [selectedLeave, setSelectedLeave] = useState(null);
+const [updatedStatus, setUpdatedStatus] = useState('');
   const openAddDialog = () => setopenDialog(true);
   const closeAddDialog = () => setopenDialog(false);
 
+  const openAddDialog1 = () => setopenDialog1(true);
+  const closeAddDialog1 = () => setopenDialog1(false);
+ const[snackbarOpen, setSnackbarOpen] = useState(false);
+  const handleSnackbarClose = ()=>
+  {
+    setSnackbarOpen(false)
+  }
   const submitLeave = async (e) => {
     e.preventDefault();
     const getleave = new FormData(e.target);
@@ -54,11 +65,26 @@ const Leave = () => {
         FromDate: FormattedFrom,
         ToDate: FormattedTo
       });
-      alert('Leave added');
+      // alert('Leave added');
+       setSnackbarOpen(true)
       setopenDialog(false);
     } catch (error) {
       const message = error?.response?.data?.message || 'Something went wrong';
       alert(message);
+    }
+  };
+ const updateLeaveStatus = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/updateleavestatus', {
+        LeaveId: selectedLeave._id,
+        LeaveStatus: updatedStatus
+      });
+      // alert("Leave status updated");
+       setSnackbarOpen(true)
+      setopenDialog1(false);
+      setEmployeeId(EmployeeId); 
+    } catch (error) {
+      alert("Failed to update leave status", 'error');
     }
   };
 
@@ -137,7 +163,31 @@ const Leave = () => {
       headerName: 'To Date',
       flex: 1,
       renderCell: (params) => dayjs(params.row.ToDate).format('YYYY-MM-DD')
-    }
+    },
+     {
+      field: 'LeaveStatus',
+      headerName: 'Status',
+      flex: 1,
+  
+    },
+      {
+            field: 'status',
+            headerName: 'Update',
+            width: 160,
+            renderCell: (params) => (
+              <Button
+                variant="contained"
+                size="small"
+                color="info"
+                sx={{ borderRadius: '20px', textTransform: 'none' }}
+                onClick={() => {   setSelectedLeave(params.row);
+     setUpdatedStatus(params.row.leaveStatus);
+   openAddDialog1(params.row)}}
+              >
+                update
+              </Button>
+            )
+          }
   ];
 
   const rows = leaveData.map((entry) => ({
@@ -225,7 +275,8 @@ const Leave = () => {
 
             <FormControl>
               <FormLabel>Leave Status</FormLabel>
-              <RadioGroup row name="LeaveStatus">
+              <RadioGroup row name="LeaveStatus" value={updatedStatus}
+              onChange={(e) => setUpdatedStatus(e.target.value)}>
                 <FormControlLabel value="pending" control={<Radio size="small" />} label="Pending" />
                 <FormControlLabel value="approved" control={<Radio size="small" />} label="Approved" />
                 <FormControlLabel value="reject" control={<Radio size="small" />} label="Reject" />
@@ -243,6 +294,39 @@ const Leave = () => {
           </DialogActions>
         </Box>
       </Dialog>
+
+
+
+     <Dialog open={openDialog1} onClose={closeAddDialog1}>
+  <form onSubmit={updateLeaveStatus}>
+    <DialogTitle>Select an Option</DialogTitle>
+    <DialogContent>
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Options</FormLabel>
+        <RadioGroup name="LeaveStatus"    value={updatedStatus}
+              onChange={(e) => setUpdatedStatus(e.target.value)}
+>
+          <FormControlLabel value="approved" control={<Radio />} label="Approved" />
+          <FormControlLabel value="reject" control={<Radio />} label="Reject" />
+        </RadioGroup>
+      </FormControl>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={closeAddDialog1}>Cancel</Button>
+      <Button type="submit" variant="contained">Submit</Button>
+    </DialogActions>
+  </form>
+</Dialog>
+  <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+            Leave added successfully
+          </Alert>
+        </Snackbar>
     </>
   );
 };

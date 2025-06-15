@@ -155,5 +155,22 @@ let  fetchLeaveByMonthAndYear = async (req, res) => {
   }
 };
 
-     
-export {AddLeave, fetchLeave, fetchLeaveByCompanyId, fetchLeaveByMonthAndYear, fetchLeaveByEmployeeId}
+   const updateLeaveStatus = async (req, res) => {
+    try {
+        const { LeaveId, LeaveStatus } = req.body;
+
+        const result = await Leave.findByIdAndUpdate(
+            LeaveId,
+            { LeaveStatus },
+            { new: true }
+        );
+
+        res.status(200).json({
+            data: result,
+            message: "Leave status updated",
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating leave status", error});
+}
+};
+export {AddLeave, fetchLeave, fetchLeaveByCompanyId, fetchLeaveByMonthAndYear, fetchLeaveByEmployeeId, updateLeaveStatus}

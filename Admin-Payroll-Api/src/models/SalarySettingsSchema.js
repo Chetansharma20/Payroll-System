@@ -7,7 +7,7 @@ let SalarySettingsSchema = mongoose.Schema(
         EffectFrom: { type: Date },
         SalaryHeads: [{
             SalaryHeadId: { type: mongoose.Schema.Types.ObjectId, ref: "SalaryHeads" },
-            value: Number
+            applicableValue: {type: Number},
         }
         ]
     },{timestamps:true})

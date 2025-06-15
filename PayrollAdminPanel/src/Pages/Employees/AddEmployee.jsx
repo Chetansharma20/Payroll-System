@@ -1,6 +1,11 @@
 import {
+  Alert,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -8,6 +13,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Snackbar,
   TextField,
   Typography,
 
@@ -19,7 +25,28 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const AddEmployee = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
+    const[snackbarOpen, setSnackbarOpen] = useState(false);
+     const openAddDialog = () => {
+    setOpenDialog(true);
+    
+  };
+
+  const handleSnackbarClose = ()=>
+  {
+    setSnackbarOpen(false)
+  }
+  const closeAddDialog = ()=>
+  {
+    setOpenDialog(false)
+  }
+ 
+  const [employeePhoto, setEmployeePhoto] = useState(null);
+const [aadhaarCard, setAadhaarCard] = useState(null);
+const [panCard, setPanCard] = useState(null);
+const [passBook, setPassBook] = useState(null);
+const [degree, setDegree] = useState(null);
+
   let { companyData } = useSelector((state) => state.user)
   console.log(companyData._id)
   const SubmitEmployeeData = async (e) => {
@@ -30,14 +57,17 @@ const AddEmployee = () => {
 
     try {
   
+  
 
-      let result = axios.post('http://localhost:5000/api/addemployee', { ...reqData, EmployeePhoto: selectedImage, CompanyId: companyData._id },
+      let result = await axios.post('http://localhost:5000/api/addemployee', { ...reqData, EmployeePhoto: employeePhoto, AdhaarCard:aadhaarCard, PanCard:panCard, PassBook:passBook, Degree:degree,  CompanyId: companyData._id },
         {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
-      alert("Employee added")
+      console.log(result.data.data)
+      // alert("Employee added")
+      setSnackbarOpen(true)
     }
 
 
@@ -96,30 +126,26 @@ useEffect(()=>
   },[])
 
   return (
-    <Box sx={{ p: 4, minHeight: '100vh', overflowX: 'hidden', // ✅ Prevent horizontal scroll
-      overflowY: 'auto',   // Optional: enable vertical scroll only if needed
-      boxSizing: 'border-box', }}>
+    <>
+  <Box sx={{ pt: 2, px: 3, pb: 2, minHeight: 'auto', boxSizing: 'border-box' }}>
+
       <Box
         sx={{
           maxWidth: '800',
-          // mx: 'auto',
           display: 'flex',
-          // alignItems: 'center',
-          // justifyContent: 'center',
-          // padding: 1,
           mr:35,
-          // ml:6,
-          flexDirection: 'column',
-          p: 4,
+        flexDirection: 'column',
+          p: 2,
           borderRadius: 3,
-          boxShadow: 4
+          boxShadow: 4,
+        
           // position:'absolute',
           // left:50,
           // right:50,
           // top:80
         }}
       >
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" align="center" gutterBottom sx={{fontWeight: 700, color: '#2e7d32'}}>
           Add Employee
         </Typography>
 
@@ -137,7 +163,7 @@ useEffect(()=>
   <Box sx={{ flex: 1, minWidth: '48%', display: 'flex', flexDirection: 'column', gap: 2 }}>
     <TextField size="small" label="Name" name="EmployeeName" type="text" required />
     <TextField size="small" label="Email" name="EmployeeEmail" type="email" required />
-    <TextField size="small" label="PhoneNo" name="EmployeePhoneNo" type="number" required />
+    <TextField size="small" label="PhoneNo" name="EmployeePhoneNo" type="text" required />
     <TextField size="small" label="Address" name="EmployeeAddress" type="text" required />
     <TextField size="small" label="City" name="EmployeeCity" type="text" required />
     <TextField size="small" label="State" name="EmployeeState" type="text" required />
@@ -174,18 +200,18 @@ useEffect(()=>
 
     
     <FormControl size="small">
-      <Select name="DepartmentName" required defaultValue="" displayEmpty>
+      <Select name="EmployeeDepartment" required defaultValue="" displayEmpty>
         <MenuItem disabled value="">Select Deparmtent</MenuItem>
         {departments.map((dep) => (
-          <MenuItem key={dep._id} value={dep._id}>{dep.DepartmentName}</MenuItem>
+          <MenuItem key={dep._id} value={dep.DepartmentName}>{dep.DepartmentName}</MenuItem>
         ))}
       </Select>
     </FormControl>
     <FormControl size="small">
-      <Select name="DesignationName" required defaultValue="" displayEmpty>
+      <Select name="EmployeeDesignation" required defaultValue="" displayEmpty>
         <MenuItem disabled value="">Select Designation</MenuItem>
         {designation.map((des) => (
-          <MenuItem key={des._id} value={des._id}>{des.DesignationName}</MenuItem>
+          <MenuItem key={des._id} value={des.DesignationName}>{des.DesignationName}</MenuItem>
         ))}
       </Select>
     </FormControl>
@@ -199,20 +225,33 @@ useEffect(()=>
       <Select name="BranchId" required defaultValue="" displayEmpty>
         <MenuItem disabled value="">Select Branch</MenuItem>
         {getAllBranch.map((br) => (
-          <MenuItem key={br._id} value={br._id}>{br.BranchName}</MenuItem>
+          <MenuItem key={br._id} value={br.BranchName}>{br.BranchName}</MenuItem>
         ))}
       </Select>
     </FormControl>
+<Button
+  onClick={openAddDialog}
+  variant="outlined"
+  color="primary"
+  size="small"
+  sx={{
+    alignSelf: 'flex-start',
+    textTransform: 'none',
+    px: 2,
+    py: 1,
+    borderRadius: 2,
+    mt: 1,
+    fontWeight: 500,
+    gap: 1,
+    display: 'flex',
+    alignItems: 'center',
+  }}
 
-    <Button variant="outlined" component="label">
-      Upload Image
-      <input
-        type="file"
-        name="EmployeePhoto"
-        hidden
-        onChange={(e) => setSelectedImage(e.target.files[0])}
-      />
-    </Button>
+>
+  Add Documents
+</Button>
+
+    
 
     <Button
       type="submit"
@@ -224,10 +263,89 @@ useEffect(()=>
       Add Employee
     </Button>
   </Box>
+ <Dialog open={openDialog} onClose={closeAddDialog} maxWidth="sm" fullWidth>
+  <DialogTitle>
+    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+      Upload Employee Documents
+    </Typography>
+  </DialogTitle>
+
+  <DialogContent dividers>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Button variant="outlined" component="label">
+        Upload Photo
+        <input type="file" hidden onChange={(e) => setEmployeePhoto(e.target.files[0])} />
+      </Button>
+      {employeePhoto && (
+        <Typography variant="body2" sx={{ ml: 1, color: 'gray' }}>
+          Selected: {employeePhoto.name}
+        </Typography>
+      )}
+
+      <Button variant="outlined" component="label">
+        Upload Aadhaar Card
+        <input type="file" hidden onChange={(e) => setAadhaarCard(e.target.files[0])} />
+      </Button>
+      {aadhaarCard && (
+        <Typography variant="body2" sx={{ ml: 1, color: 'gray' }}>
+          Selected: {aadhaarCard.name}
+        </Typography>
+      )}
+
+      <Button variant="outlined" component="label" required>
+        Upload PAN Card
+        <input type="file" hidden onChange={(e) => setPanCard(e.target.files[0])} />
+      </Button>
+      {panCard && (
+        <Typography variant="body2" sx={{ ml: 1, color: 'gray' }}>
+          Selected: {panCard.name}
+        </Typography>
+      )}
+
+      <Button variant="outlined" component="label">
+        Upload Bank Passbook
+        <input type="file" hidden onChange={(e) => setPassBook(e.target.files[0])} />
+      </Button>
+      {passBook && (
+        <Typography variant="body2" sx={{ ml: 1, color: 'gray' }}>
+          Selected: {passBook.name}
+        </Typography>
+      )}
+
+      <Button variant="outlined" component="label">
+        Upload Degree
+        <input type="file" hidden onChange={(e) => setDegree(e.target.files[0])} />
+      </Button>
+      {degree && (
+        <Typography variant="body2" sx={{ ml: 1, color: 'gray' }}>
+          Selected: {degree.name}
+        </Typography>
+      )}
+    </Box>
+  </DialogContent>
+
+  <DialogActions sx={{ justifyContent: 'flex-end', px: 3, pb: 2 }}>
+    <Button onClick={closeAddDialog} variant="contained" color="error">
+      Done
+    </Button>
+  </DialogActions>
+</Dialog>
+  <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+            Employee Added successfully!
+          </Alert>
+        </Snackbar>
 </Box>
 
       </Box>
     </Box>
+    
+   </>
   );
 };
 

@@ -43,8 +43,8 @@ let FetchDesignationByCompany = async (req,res)=>
     { 
         try
         {
-            let {CompanyId} = req.body 
-                let result = await Designation.find({CompanyId})
+            let {CompanyId, DepartmentId} = req.body 
+                let result = await Designation.find({CompanyId, DepartmentId}).populate( "DepartmentName")
                 res.status(200).json(result)
     
             }
@@ -55,5 +55,16 @@ let FetchDesignationByCompany = async (req,res)=>
             }
     
     }
+//     let FetchDesignationByDepartment = async (req, res) => {
+//   try {
+//     const { CompanyId, DepartmentId } = req.body;
+//     let result = await Designation.find({ CompanyId, DepartmentId });
+//     res.status(200).json(result);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: "Error fetching designations by department" });
+//   }
+// };
+
 export {AddDesignation, FetchDesignation, FetchDesignationByCompany}
 

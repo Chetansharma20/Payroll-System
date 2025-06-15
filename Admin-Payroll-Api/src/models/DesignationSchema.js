@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+// import { Department } from "./DepartmentSchema";
 
 let DesignationSchema = mongoose.Schema({
     DesignationName:{type:String},
@@ -7,6 +8,8 @@ let DesignationSchema = mongoose.Schema({
 //     type:Boolean,
 //     default:false
 //    }
+// DepartmentId: { type: mongoose.Schema.Types.ObjectId, ref: "/Department" }
+DepartmentName:{type:String}
 },{timestamp:true})
 
-export const  Designation = mongoose.model("Desgnation", DesignationSchema)
+export const  Designation = mongoose.model("Designation", DesignationSchema)

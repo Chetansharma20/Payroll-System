@@ -5,6 +5,7 @@ import Leaves from './Leaves'
 import Attendances from './Attendances'
 import { Route, Routes } from 'react-router-dom'
 import DashBoard from './DashBoard'
+import Profile from './Profile'
 
 const Routing = () => {
   return (
@@ -15,6 +16,7 @@ const Routing = () => {
        <Route path='/leaves' element={<Leaves/>}/>
        <Route path='/attendances' element={<Attendances/>}/>
         <Route path='/dashboard' element={<DashBoard/>}/>
+          <Route path='/profile' element={<Profile/>}/>
     </Routes>
 
  
