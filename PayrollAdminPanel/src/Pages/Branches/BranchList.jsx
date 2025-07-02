@@ -16,7 +16,8 @@ const BranchList = () => {
 
         try
         {
-            let result = await axios.post("http://localhost:5000/api/addbranch", {...getBranch, CompanyId:companyData._id})
+            let result = await axios.post("http://localhost:5000/api/addbranch", {...getBranch, BranchPinCode: Number(getBranch.BranchPinCode), // convert to number
+    BranchIsActive: checked, CompanyId:companyData._id})
             console.log(result.data)
             alert("Branch Added")
         }
@@ -65,7 +66,7 @@ setAllBranches(formattedData)
     const columns = [
         { field: 'BranchName', headerName: 'Branch Name', flex: 1,minWidth: 150 },
         // { field: 'EmployeeEmail', headerName: 'Email ID', flex: 1,minWidth: 250 },
-        { field: 'RegistrationNo', headerName: 'Registration No', flex: 1,minWidth: 150 },
+        // { field: 'RegistrationNo', headerName: 'Registration No', flex: 1,minWidth: 150 },
         { field: 'BranchAddress', headerName: 'Branch Address', flex: 1,minWidth: 150 },
         { field: 'BranchCity', headerName: 'Branch City', flex: 1,minWidth: 150 },
         { field: 'BranchState', headerName: 'Branch State', flex: 1,minWidth: 150 },
@@ -114,10 +115,10 @@ setAllBranches(formattedData)
             name='BranchAddress' 
             type="text" 
             required />
-            <TextField label="Registration No" 
+            {/* <TextField label="Registration No" 
             name='RegistrationNo' 
             type="text" 
-            required />
+            required /> */}
             <TextField label="Branch City" 
             name='BranchCity' 
             type="text" 

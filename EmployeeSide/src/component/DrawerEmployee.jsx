@@ -187,6 +187,24 @@ dispatcher(logout())
                         </ListItemIcon>
                         <ListItemText primary="Dashboard" />
                     </ListItem>
+                     <ListItem
+                        onClick={() => {
+                            navigate('/salary')
+                            handleDrawerClose()
+                        }}
+                        sx={{
+                            borderRadius: 2,
+                            '&:hover': {
+                                backgroundColor: '#f3e5f5'
+                            }
+                        }}
+                    >
+                        <ListItemIcon sx={{ color: '#9c27b0' }}>
+                            <AnalyticsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Salary" />
+                    </ListItem>
+                    
                 </List>
             </Drawer>
         </>

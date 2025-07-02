@@ -100,7 +100,7 @@ const EmployeeList = () => {
     }
   };
 
-  const columns = [
+   const columns = [
     {
       field: 'EmployeePhoto',
       headerName: 'Photo',

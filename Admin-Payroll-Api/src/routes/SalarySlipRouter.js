@@ -1,6 +1,6 @@
 import express from "express"
 
-import {  calculateSalaryDetailed, fetchSalarySlipByEmployee, getSalaryslip, getSalaryslipByCompany } from "../controller/SalarySlip.js"
+import {  calculateSalarybycompany, calculateSalaryDetailed, fetchSalarySlipByEmployee, getSalaryslip, getSalaryslipByCompany } from "../controller/SalarySlip.js"
 
 
 let SalarySlipRouter = express.Router()
@@ -12,6 +12,7 @@ let SalarySlipRouter = express.Router()
 SalarySlipRouter.post("/fetchsalaryslipbyemployee", fetchSalarySlipByEmployee)
 SalarySlipRouter.get("/getsalaryslip", getSalaryslip)
 SalarySlipRouter.post("/calculatesalaryslip", calculateSalaryDetailed)
+SalarySlipRouter.post("/calculatesalaryslipbycompany", calculateSalarybycompany)
 SalarySlipRouter.post("/getsalaryslipbycompany", getSalaryslipByCompany)
 // SalarySlipRouter.post("/fetchsalaryslipbyemployee", fetchSalarySlipByEmployee)
 

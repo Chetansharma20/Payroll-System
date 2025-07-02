@@ -21,10 +21,10 @@ const MenuTree = () => {
         }
       >
         <TreeItem itemId="2" label="Overview" onClick={() => navigate('/dashboard/overview')} />
-        <TreeItem itemId="3" label="Payroll Summary" onClick={() => navigate('/dashboard/payrollsummary')} />
+        {/* <TreeItem itemId="3" label="Payroll Summary" onClick={() => navigate('/dashboard/payrollsummary')} /> */}
         {/* <TreeItem itemId="4" label="Employee Attendance" onClick={() => navigate('/dashboard/employeeattendance')} /> */}
-        <TreeItem itemId="5" label="Salary Disbursement" onClick={() => navigate('/dashboard/salarydisbursement')} />
-        <TreeItem itemId="6" label="Recent Activities" onClick={() => navigate('/dashboard/recentacticities')} />
+        {/* <TreeItem itemId="5" label="Salary Disbursement" onClick={() => navigate('/dashboard/salarydisbursement')} /> */}
+        {/* <TreeItem itemId="6" label="Recent Activities" onClick={() => navigate('/dashboard/recentacticities')} /> */}
       </TreeItem>
 
       <TreeItem
@@ -53,12 +53,12 @@ const MenuTree = () => {
         }
       >
          <TreeItem itemId="29" label="Salary Heads" onClick={() => navigate('/payroll/salaryheads')} />
-        <TreeItem itemId="15" label="Salary Structure" onClick={() => navigate('/payroll/salarystructure')} />
-        <TreeItem itemId="17" label="Bonus And Incentives" onClick={() => navigate('/payroll/bonusincentives')} />
+        {/* <TreeItem itemId="15" label="Salary Structure" onClick={() => navigate('/payroll/salarystructure')} /> */}
+        {/* <TreeItem itemId="17" label="Bonus And Incentives" onClick={() => navigate('/payroll/bonusincentives')} /> */}
         <TreeItem itemId="18" label="Payslip Management" onClick={() => navigate('/payroll/payslip')} />
       </TreeItem>
 
-      <TreeItem
+      {/* <TreeItem
         itemId="25"
         label={
           <Box display="flex" alignItems="center" gap={1}>
@@ -67,10 +67,10 @@ const MenuTree = () => {
         }
       >
         <TreeItem itemId="26" label="Company Settings" onClick={() => navigate('/settings/companysettings')} />
-        {/* <TreeItem itemId="27" label="User Roles And Permissions" onClick={() => navigate('/settings/userroles')} /> */}
-        {/* <TreeItem itemId="28" label="Payroll Configurations" onClick={() => navigate('/settings/payrollconfigurations')} /> */}
-        {/* <TreeItem itemId="29" label="Salary Heads" onClick={() => navigate('/settings/salaryheads')} /> */}
-      </TreeItem>
+        <TreeItem itemId="27" label="User Roles And Permissions" onClick={() => navigate('/settings/userroles')} />
+        <TreeItem itemId="28" label="Payroll Configurations" onClick={() => navigate('/settings/payrollconfigurations')} />
+        <TreeItem itemId="29" label="Salary Heads" onClick={() => navigate('/settings/salaryheads')} />
+      </TreeItem> */}
 
       <TreeItem
         itemId="30"

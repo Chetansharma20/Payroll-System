@@ -29,9 +29,8 @@ let fetchSalarySlipByEmployee = async (req,res)=>
     {
         try
         {
-            let {CompanyId, EmployeeID} = req.body
-            let result = await SalarySlip.find({ CompanyId: CompanyId,
-      EmployeeID: EmployeeID})
+            let { EmployeeID} = req.body
+            let result = await SalarySlip.find({ EmployeeID: EmployeeID}).populate("EmployeeID","EmployeeName")
             // .where("CompanyId")
             // .eq(CompanyId)
             res.status(200).json(
@@ -70,7 +69,7 @@ let fetchSalarySlipByEmployee = async (req,res)=>
 
 // add the genrate salary slip funtion
 const calculateSalaryDetailed = async (req, res) => {
-    const { CompanyId, EmployeeID, fromdate, todate } = req.body
+    const { CompanyId, EmployeeID, Month } = req.body
     console.log(req.body)
     try {
         const result = await SalarySettings.aggregate([
@@ -167,8 +166,7 @@ const calculateSalaryDetailed = async (req, res) => {
                 totalDeductions: result[0].totalDeductions,
                 grossSalary:  result[0].grossSalary,
                 netSalary: result[0].netSalary,
-                fromdate: fromdate,
-                todate: todate
+               Month:Month
             })
             return res.status(200).json(
                 {
@@ -187,6 +185,112 @@ const calculateSalaryDetailed = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+const calculateSalarybycompany = async (req, res) => {
+    const { CompanyId, Month } = req.body;
+    console.log(req.body);
+
+    try {
+        const result = await SalarySettings.aggregate([
+            {
+                $match: {
+                    CompanyId: new mongoose.Types.ObjectId(CompanyId),
+                },
+            },
+            { $unwind: "$SalaryHeads" },
+            {
+                $lookup: {
+                    from: "salaryheads",
+                    localField: "SalaryHeads.SalaryHeadId",
+                    foreignField: "_id",
+                    as: "salaryHeadDetails",
+                },
+            },
+            { $unwind: "$salaryHeadDetails" },
+            {
+                $addFields: {
+                    headType: "$salaryHeadDetails.SalaryHeadsType",
+                    title: "$salaryHeadDetails.SalaryHeadsTitle",
+                    shortName: "$salaryHeadDetails.ShortName",
+                    amount: "$SalaryHeads.applicableValue",
+                },
+            },
+            {
+                $group: {
+                    _id: "$EmployeeID",
+                    EmployeeID: { $first: "$EmployeeID" },
+                    CompanyId: { $first: "$CompanyId" },
+                    Earnings: {
+                        $push: {
+                            $cond: [
+                                { $eq: ["$headType", "Earnings"] },
+                                { title: "$title", shortName: "$shortName", amount: "$amount" },
+                                "$$REMOVE"
+                            ]
+                        }
+                    },
+                    Deductions: {
+                        $push: {
+                            $cond: [
+                                { $eq: ["$headType", "Deductions"] },
+                                { title: "$title", shortName: "$shortName", amount: "$amount" },
+                                "$$REMOVE"
+                            ]
+                        }
+                    },
+                    totalEarnings: {
+                        $sum: {
+                            $cond: [{ $eq: ["$headType", "Earnings"] }, "$amount", 0]
+                        }
+                    },
+                    totalDeductions: {
+                        $sum: {
+                            $cond: [{ $eq: ["$headType", "Deductions"] }, "$amount", 0]
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    grossSalary: "$totalEarnings",
+                    netSalary: { $subtract: ["$totalEarnings", "$totalDeductions"] },
+                },
+            },
+        ]);
+
+        console.log(result);
+
+        const allSlips = [];
+
+        for (let emp of result) {
+            try {
+                const salResult = await SalarySlip.create({
+                    EmployeeID: emp.EmployeeID,
+                    CompanyId: emp.CompanyId,
+                    Deductions: emp.Deductions,
+                    Earnings: emp.Earnings,
+                    totalEarnings: emp.totalEarnings,
+                    totalDeductions: emp.totalDeductions,
+                    grossSalary: emp.grossSalary,
+                    netSalary: emp.netSalary,
+                    Month:Month
+                });
+                allSlips.push(salResult);
+            } catch (error) {
+                console.log(`Failed for employee ${emp.EmployeeID}: ${error.message}`);
+            }
+        }
+
+        return res.status(200).json({
+            message: "Salary Slips Generated for All Employees",
+            data: allSlips
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 let getSalaryslip = async (req, res) => {
 
@@ -220,6 +324,6 @@ let getSalaryslipByCompany = async (req, res) => {
 //         res.status(500).json(error)
 //     }
 // 
-export { getSalaryslip, calculateSalaryDetailed , fetchSalarySlipByEmployee, getSalaryslipByCompany}
+export { getSalaryslip, calculateSalaryDetailed , fetchSalarySlipByEmployee, getSalaryslipByCompany,calculateSalarybycompany}
 
     

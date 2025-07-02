@@ -21,7 +21,7 @@ console.log(reqData)
 
 try
 {
-  let result = axios.post('http://localhost:5000/api/addcompany',reqData)
+  let result = await axios.post('http://localhost:5000/api/addcompany',reqData)
   alert("Company Added")
 }
 catch(error)
@@ -108,11 +108,11 @@ required />
 name='CompanyState' 
 type="text" 
 required />
-<TextField label="Salary Heads" 
+{/* <TextField label="Salary Heads" 
 name='SalaryHeads' 
 type="text" 
 required />
-
+ */}
 
 
 

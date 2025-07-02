@@ -199,27 +199,43 @@ const AttendenceTrack = () => {
       </Paper>
 
       {/* Edit Dialog */}
-      {/* <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Edit Attendance</DialogTitle>
         <DialogContent dividers>
           {selectedRow && (
             <>
               <Typography gutterBottom><strong>Name:</strong> {selectedRow?.EmployeeID?.EmployeeName || 'N/A'}</Typography>
               <Typography gutterBottom><strong>Date:</strong> {dayjs(selectedRow.AttendanceDate).format('YYYY-MM-DD')}</Typography>
-              <TextField
-                label="Punch In"
-                fullWidth
-                margin="normal"
-                value={inPunch}
-                onChange={(e) => setInPunch(e.target.value)}
-              />
-              <TextField
-                label="Punch Out"
-                fullWidth
-                margin="normal"
-                value={outPunch}
-                onChange={(e) => setOutPunch(e.target.value)}
-              />
+            <TextField
+  label="Punch In"
+  type="time"
+  fullWidth
+  margin="normal"
+  value={inPunch}
+  onChange={(e) => setInPunch(e.target.value)}
+  InputLabelProps={{
+    shrink: true
+  }}
+  inputProps={{
+    step: 60  // 1 minute step
+  }}
+/>
+
+<TextField
+  label="Punch Out"
+  type="time"
+  fullWidth
+  margin="normal"
+  value={outPunch}
+  onChange={(e) => setOutPunch(e.target.value)}
+  InputLabelProps={{
+    shrink: true
+  }}
+  inputProps={{
+    step: 60  // 1 minute step
+  }}
+/>
+
             </>
           )}
         </DialogContent>
@@ -236,7 +252,7 @@ const AttendenceTrack = () => {
             Save
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
     </Box>
   );
 };
