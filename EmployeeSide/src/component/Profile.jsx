@@ -75,7 +75,7 @@ const Profile = () => {
           <li><strong>Designation:</strong> {EmployeeData.EmployeeDesignation}</li>
           <li><strong>Department:</strong> {EmployeeData.EmployeeDepartment}</li>
           <li><strong>Employee Type:</strong> {EmployeeData.EmployeeType}</li>
-          <li><strong>Branch:</strong> {EmployeeData.BranchId?.BranchName}</li>
+          {/* <li><strong>Branch:</strong> {EmployeeData.BranchId?.BranchName}</li> */}
           <li><strong>Company:</strong> {EmployeeData.CompanyId?.CompanyName}</li>
         </ul>
       </div>

@@ -82,6 +82,8 @@ catch(error)
 
 }
 }
+
+
 //fetch company
     let fetchEmployee= async (req,res)=>
     {
