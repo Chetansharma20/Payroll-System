@@ -1,6 +1,7 @@
 import { Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
 import axios from 'axios'
 import React, { useState } from 'react'
+import API_ENDPOINTS from '../config'
 
 const AddCompany = () => {
 
@@ -21,7 +22,7 @@ console.log(reqData)
 
 try
 {
-  let result = await axios.post('http://localhost:5000/api/addcompany',reqData)
+  let result = await axios.post(API_ENDPOINTS.REGISTER.COMPANY,reqData)
   alert("Company Added")
 }
 catch(error)

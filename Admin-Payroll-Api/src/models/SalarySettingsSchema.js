@@ -8,6 +8,7 @@ let SalarySettingsSchema = mongoose.Schema(
         SalaryHeads: [{
             SalaryHeadId: { type: mongoose.Schema.Types.ObjectId, ref: "SalaryHeads" },
             applicableValue: {type: Number},
+            percentage: {type:Number},
         }
         ]
     },{timestamps:true})

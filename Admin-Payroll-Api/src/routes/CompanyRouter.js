@@ -1,13 +1,14 @@
 import express from "express"
 import { AddCompany, CompanyLogin, fetchCompany, UpdateCompany } from "../controller/CompanyController.js"
+import { verifyRole } from "../MiddleWare/auth.js"
 
 let CompanyRouter = express.Router()
 
 
 
-CompanyRouter.get("/fetchcompany", fetchCompany)
+CompanyRouter.get("/fetchcompany", verifyRole(["Company"]), fetchCompany)
 CompanyRouter.post("/addcompany", AddCompany)
-CompanyRouter.put("/updatecompany", UpdateCompany)
+CompanyRouter.put("/updatecompany",verifyRole(["Company"]), UpdateCompany)
 CompanyRouter.post("/companylogin", CompanyLogin)
 
 export {CompanyRouter}

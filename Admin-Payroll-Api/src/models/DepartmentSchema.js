@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-let DepartmentSchema = mongoose.Schema({
-    DepartmentName:{type:String},
-   CompanyId:{type:mongoose.Schema.Types.ObjectId, ref:"Company"},
-//    DepartmentIsActive:{
-//     type:Boolean,
-//     default:false
-//    }
-},{timestamp:true})
+const DepartmentSchema = new mongoose.Schema(
+  {
+    DepartmentName: { type: String, required: true },
+    CompanyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true },
+    DepartmentIsActive: { type: Boolean, default: true }
+  },
+  { timestamps: true }
+);
 
-export const  Department = mongoose.model("Department", DepartmentSchema)
+export const Department = mongoose.model("Department", DepartmentSchema);

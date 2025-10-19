@@ -19,50 +19,59 @@ import dayjs from 'dayjs';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import API_ENDPOINTS from '../../config';
+
+
+
 const EmployeeList = () => {
-  const [documentsDialogOpen, setDocumentsDialogOpen] = useState(false);
-  const [documentsData, setDocumentsData] = useState(null);
-  const handleOpenDocumentsDialog = (employee) => {
-    console.log(employee)
-    setDocumentsData(employee);
-    setDocumentsDialogOpen(true);
-  };
-  
-  const handleCloseDocumentsDialog = () => {
-    setDocumentsDialogOpen(false);
-    setDocumentsData(null);
-  };
-  const { companyData } = useSelector((state) => state.user);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const { companyData } = useSelector((state) => state.company);
+
   const [allEmployees, setAllEmployees] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Dialog states
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [attendance, setAttendance] = useState({
+    AttendanceDate: dayjs(),
     InPunchTime: dayjs(),
     OutPunchTime: dayjs()
   });
 
-  const navigate = useNavigate();
+  // Documents dialog
+  const [documentsDialogOpen, setDocumentsDialogOpen] = useState(false);
+  const [documentsData, setDocumentsData] = useState(null);
 
+  // Snackbar
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  // Fetch employees by company
   useEffect(() => {
+    if (!companyData?._id) return;
+
     const fetchEmployees = async () => {
       try {
-        const result = await axios.post("http://localhost:5000/api/getemployeebycompany", {
-          CompanyId: companyData._id
-        });
-        setAllEmployees(result.data.data);
+        const response = await axios.post(
+          API_ENDPOINTS.EMPLOYEES.LIST_BY_COMPANY,
+          { CompanyId: companyData._id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAllEmployees(response.data.data);
       } catch (error) {
         console.error("Failed to fetch employees:", error);
       }
     };
-    fetchEmployees();
-  }, [companyData]);
 
+    fetchEmployees();
+  }, [companyData, token]);
+
+  // Attendance dialog handlers
   const handleOpenDialog = (employee) => {
     setSelectedEmployee(employee);
     setAttendance({
+      AttendanceDate: dayjs(),
       InPunchTime: dayjs(),
       OutPunchTime: dayjs()
     });
@@ -74,33 +83,63 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
   const handleSubmit = async () => {
-    const formattedIn = attendance.InPunchTime ? dayjs(attendance.InPunchTime).format('hh:mm A') : '';
-    const formattedOut = attendance.OutPunchTime ? dayjs(attendance.OutPunchTime).format('hh:mm A') : '';
+    if (!selectedEmployee) return;
 
     const payload = {
       EmployeeID: selectedEmployee._id,
       CompanyId: companyData._id,
-      InPunchTime: formattedIn,
-      OutPunchTime: formattedOut
+      AttendanceDate: attendance.AttendanceDate.toISOString(),
+      InPunchTime: attendance.InPunchTime.toISOString(),
+      OutPunchTime: attendance.OutPunchTime.toISOString()
     };
 
-    handleCloseDialog();
-    setSnackbarOpen(true);
-
     try {
-      const response = await axios.post("http://localhost:5000/api/addattendance", payload);
-      console.log(response.data.data);
+      const response = await axios.post(API_ENDPOINTS.EMPLOYEES.ADD_ATTENDANCE, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setSnackbar({
+        open: true,
+        message: response.data.message || "Attendance submitted successfully!",
+        severity: 'success'
+      });
+
+      handleCloseDialog();
     } catch (error) {
-      console.error("Error attendance data:", error);
+      console.error("Error submitting attendance:", error);
+      const status = error.response?.status;
+
+      setSnackbar({
+        open: true,
+        message:
+          status === 409
+            ? "Attendance already marked for this date!"
+            : status === 400
+            ? error.response.data.message || "Invalid data provided!"
+            : "Something went wrong while submitting attendance.",
+        severity: status === 409 ? "warning" : status === 400 ? "error" : "error"
+      });
     }
   };
 
-   const columns = [
+  // Documents dialog handlers
+  const handleOpenDocumentsDialog = (employee) => {
+    setDocumentsData(employee);
+    setDocumentsDialogOpen(true);
+  };
+  const handleCloseDocumentsDialog = () => {
+    setDocumentsDialogOpen(false);
+    setDocumentsData(null);
+  };
+
+  // Snackbar close
+  const handleSnackbarClose = () => {
+    setSnackbar({ open: false, message: '', severity: 'success' });
+  };
+
+  // DataGrid columns
+  const columns = [
     {
       field: 'EmployeePhoto',
       headerName: 'Photo',
@@ -108,21 +147,21 @@ const EmployeeList = () => {
       renderCell: (params) => (
         <img
           alt="photo"
-          src={`http://localhost:5000/${params.row.EmployeePhoto}`}
+          src={API_ENDPOINTS.EMPLOYEES.PHOTO(params.row.EmployeePhoto)}
           height={50}
           width={50}
-          style={{ borderRadius: '50%', display:'flex', justifyContent:'center', alignItems:'center' }}
+          style={{ borderRadius: '50%', objectFit: 'cover' }}
         />
       )
     },
     { field: 'EmployeeName', headerName: 'Name', flex: 1 },
-    { field: 'EmployeePhoneNo', headerName: 'Phone No', width:120 },
-    { field: 'EmployeeGender', headerName: 'Gender', width: 120},
+    { field: 'EmployeePhoneNo', headerName: 'Phone No', width: 120 },
+    { field: 'EmployeeGender', headerName: 'Gender', width: 120 },
     { field: 'EmployeeDesignation', headerName: 'Designation', flex: 2 },
     {
       field: 'attendance',
       headerName: 'Attendance',
-      width: 100,
+      width: 120,
       renderCell: (params) => (
         <Button
           variant="contained"
@@ -136,202 +175,183 @@ const EmployeeList = () => {
       )
     },
     {
-  field: 'documents',
-  headerName: 'Documents',
-  width: 120,
-  renderCell: (params) => (
-    <Button
-      onClick={() => handleOpenDocumentsDialog(params.row)}
-      color="primary"
-      sx={{ minWidth: 'auto' }}
-    >
-      <VisibilityIcon />
-    </Button>
-  )
-}
-
+      field: 'documents',
+      headerName: 'Documents',
+      width: 120,
+      renderCell: (params) => (
+        <Button onClick={() => handleOpenDocumentsDialog(params.row)} color="primary">
+          <VisibilityIcon />
+        </Button>
+      )
+    }
   ];
 
   const rows = allEmployees
-    .filter(emp => emp.EmployeeName.toLowerCase().includes(searchTerm.toLowerCase()))
-    .map((emp, index) => ({
-      id: emp._id || index,
-      ...emp
-    }));
+    .filter(emp => emp.EmployeeName?.toLowerCase().includes(searchTerm.toLowerCase()))
+    .map((emp, index) => ({ id: emp._id || index, ...emp }));
 
   return (
     <>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '3%' }}>
-        <Box sx={{ width: '79vw' }}>
-          {/* Title */}
-          <Box sx={{ width: '100%', mb: 3 }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
-              Employee List
-            </Typography>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '3%' }}>
+          <Box sx={{ width: '79vw' }}>
+            {/* Header */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
+                Employee List
+              </Typography>
 
-            {/* Search + Add Button Row */}
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 2,
-                flexWrap: 'wrap'
-              }}
-            >
-              <TextField
-                label="Search Employee"
-                variant="outlined"
-                size="small"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ minWidth: 250 }}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+                <TextField
+                  label="Search Employee"
+                  variant="outlined"
+                  size="small"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  sx={{ minWidth: 250 }}
+                />
+                <Button variant="contained" color="success" onClick={() => navigate('/admin/employee/addemployee')}>
+                  Add Employee
+                </Button>
+              </Box>
+            </Box>
+
+            {/* Data Grid */}
+            <Box sx={{ height: 450, width: '100%' }}>
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={10}
+                rowsPerPageOptions={[5, 10, 25]}
+                disableRowSelectionOnClick
+                sx={{ backgroundColor: 'white' }}
               />
+            </Box>
+          </Box>
 
-              <Button
-                variant="contained"
-                color="success"
-                sx={{mr:2}}
-                onClick={() => navigate('/employee/addemployee')}
-              >
-                Add Employee
+          {/* Attendance Dialog */}
+          <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <DialogTitle sx={{ fontWeight: 'bold', backgroundColor: '#f0f0f0' }}>
+              Mark Attendance
+            </DialogTitle>
+            <DialogContent dividers>
+              <Box sx={{ mt: 1 }}>
+                <TextField
+                  label="Employee Name"
+                  fullWidth
+                  value={selectedEmployee?.EmployeeName || ''}
+                  disabled
+                  margin="normal"
+                />
+                <DatePicker
+                  label="Attendance Date"
+                  value={attendance.AttendanceDate}
+                  onChange={(newDate) => setAttendance((prev) => ({ ...prev, AttendanceDate: newDate }))}
+                  slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
+                />
+                <TimePicker
+                  label="Punch In Time"
+                  value={attendance.InPunchTime}
+                  onChange={(newValue) =>
+                    setAttendance((prev) => ({
+                      ...prev,
+                      InPunchTime: dayjs(prev.AttendanceDate)
+                        .hour(newValue.hour())
+                        .minute(newValue.minute())
+                        .second(0)
+                    }))
+                  }
+                  ampm
+                  slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
+                />
+                <TimePicker
+                  label="Punch Out Time"
+                  value={attendance.OutPunchTime}
+                  onChange={(newValue) =>
+                    setAttendance((prev) => ({
+                      ...prev,
+                      OutPunchTime: dayjs(prev.AttendanceDate)
+                        .hour(newValue.hour())
+                        .minute(newValue.minute())
+                        .second(0)
+                    }))
+                  }
+                  ampm
+                  slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button onClick={handleCloseDialog} variant="outlined" color="error">
+                Cancel
               </Button>
-            </Box>
-          </Box>
+              <Button onClick={handleSubmit} variant="contained" color="primary">
+                Submit
+              </Button>
+            </DialogActions>
+          </Dialog>
 
-          {/* Data Grid */}
-          <Box sx={{ height: 450, width: '100%' }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[5, 10, 25]}
-              disableRowSelectionOnClick
-              sx={{ backgroundColor: 'white' }}
-            />
-          </Box>
+          {/* Snackbar Feedback */}
+          <Snackbar
+            open={snackbar.open}
+            autoHideDuration={3000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+              {snackbar.message}
+            </Alert>
+          </Snackbar>
         </Box>
+      </LocalizationProvider>
 
-        {/* Attendance Dialog */}
-        <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle sx={{ fontWeight: 'bold', backgroundColor: '#f0f0f0' }}>
-            Mark Attendance
-          </DialogTitle>
-          <DialogContent dividers>
-            <Box sx={{ mt: 1 }}>
-              <TextField
-                label="Employee Name"
-                fullWidth
-                value={selectedEmployee?.EmployeeName || ''}
-                disabled
-                margin="normal"
-              />
-
-              <DatePicker
-                label="Attendance Date"
-                value={attendance.InPunchTime}
-                onChange={(newDate) => {
-                  setAttendance((prev) => ({
-                    punchIn: newDate.hour(prev.InPunchTime.hour()).minute(prev.InPunchTime.minute()),
-                    punchOut: newDate.hour(prev.OutPunchTime.hour()).minute(prev.OutPunchTime.minute())
-                  }));
-                }}
-                slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
-              />
-
-              <TimePicker
-                label="Punch In Time"
-                value={attendance.InPunchTime}
-                onChange={(newValue) =>
-                  setAttendance({ ...attendance, InPunchTime: newValue })
-                }
-                ampm
-                slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
-              />
-
-              <TimePicker
-                label="Punch Out Time"
-                value={attendance.OutPunchTime}
-                onChange={(newValue) =>
-                  setAttendance({ ...attendance, OutPunchTime: newValue })
-                }
-                ampm
-                slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button onClick={handleCloseDialog} variant="outlined" color="error">
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} variant="contained" color="primary">
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Snackbar Feedback */}
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={3000}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-            Attendance submitted successfully!
-          </Alert>
-        </Snackbar>
-      </Box>
-    </LocalizationProvider>
-    <Dialog open={documentsDialogOpen} onClose={handleCloseDocumentsDialog}>
-  <DialogTitle sx={{ fontWeight: 'bold', backgroundColor: '#f0f0fz' }}>
-    Uploaded Documents
-  </DialogTitle>
-  <DialogContent
-  dividers
-  sx={{
-    display: 'flex',
-    gap: 2,
-    overflowX: 'auto',
-    padding: 2,
-    height: '60vh', 
-    maxWidth:'60vh'  // limit max height of dialog content for better UX
-  }}
->
-  {documentsData ? (
-    ['AdhaarCard', 'PanCard', 'PassBook', 'Degree'].map((key) =>
-      documentsData[key] ? (
-        <img
-          key={key}
-          alt={key}
-          src={`http://localhost:5000/${documentsData[key]}`}
-          style={{
-            height: 350,
-            width: 450,
-            borderRadius: '12px',
-            objectFit: 'contain',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+      {/* Documents Dialog */}
+      <Dialog open={documentsDialogOpen} onClose={handleCloseDocumentsDialog}>
+        <DialogTitle sx={{ fontWeight: 'bold', backgroundColor: '#f0f0f0' }}>
+          Uploaded Documents
+        </DialogTitle>
+        <DialogContent
+          dividers
+          sx={{
+            display: 'flex',
+            gap: 2,
+            overflowX: 'auto',
+            padding: 2,
+            height: '60vh',
+            maxWidth: '60vh'
           }}
-        />
-      ) : (
-        <Typography key={key} color="text.secondary" sx={{ minWidth: 150, alignSelf: 'center' }}>
-          {key}: Not Uploaded
-        </Typography>
-      )
-    )
-  ) : (
-    <Typography>No document data available.</Typography>
-  )}
-</DialogContent>
-
-  <DialogActions>
-    <Button onClick={handleCloseDocumentsDialog} color="error" variant="outlined">
-      Close
-    </Button>
-  </DialogActions>
-</Dialog>
-
+        >
+          {documentsData ? (
+            ['AdhaarCard', 'PanCard', 'PassBook', 'Degree'].map((key) =>
+              documentsData[key] ? (
+                <img
+                  key={key}
+                  alt={key}
+                  src={API_ENDPOINTS.EMPLOYEES.DOCUMENT(documentsData[key])}
+                  style={{
+                    height: 350,
+                    width: 450,
+                    borderRadius: '12px',
+                    objectFit: 'contain',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                  }}
+                />
+              ) : (
+                <Typography key={key} color="text.secondary" sx={{ minWidth: 150, alignSelf: 'center' }}>
+                  {key}: Not Uploaded
+                </Typography>
+              )
+            )
+          ) : (
+            <Typography>No document data available.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDocumentsDialog} color="error" variant="outlined">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

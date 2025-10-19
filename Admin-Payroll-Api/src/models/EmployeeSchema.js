@@ -43,6 +43,7 @@ PassBook:{
 Degree:{
     type:String
 }
- 
+ ,
+  role: { type: String, default: "Employee" },
 },{timestamps:true})
 export const Employee = mongoose.model("Employee", EmployeeSchema)

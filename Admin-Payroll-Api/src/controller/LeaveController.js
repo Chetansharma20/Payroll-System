@@ -5,29 +5,57 @@ import { Leave } from "../models/LeaveSchema.js";
 
 
 // add company
+let AddLeave = async (req, res) => {
+  try {
+    const reqData = req.body;
+    console.log("LeaveData", reqData);
 
-let AddLeave = async (req, res)=>
-{
-    let reqData = req.body
-    console.log("LeaveData",reqData)
-    try
-    {
-        let result =  await Leave.create(reqData)
+    const { EmployeeID, CompanyId, FromDate, ToDate } = reqData;
 
-        res.status(200).json({
-            data: result,
-            message: "company Added Successfully"
-        })
-    }
-    catch(error)
-    {
-        console.log(error)
-        res.status(500).json(error)
-
+    if (!EmployeeID || !CompanyId || !FromDate || !ToDate) {
+      return res.status(400).json({
+        success: false,
+        message: "EmployeeID, CompanyId, FromDate, and ToDate are required",
+      });
     }
 
+    // ✅ Step 1: Check for overlapping or duplicate leave for the same employee
+    const overlap = await Leave.findOne({
+      EmployeeID,
+      CompanyId,
+      $or: [
+        {
+          FromDate: { $lte: ToDate },
+          ToDate: { $gte: FromDate },
+        },
+      ],
+    });
 
-}
+    if (overlap) {
+      return res.status(400).json({
+        success: false,
+        message: "Leave already exists or overlaps with an existing leave for this employee.",
+      });
+    }
+
+    // ✅ Step 2: Create the leave
+    const result = await Leave.create(reqData);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: "Leave added successfully",
+    });
+  } catch (error) {
+    console.error("Error adding leave:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while adding leave",
+      error: error.message,
+    });
+  }
+};
+
 //fetch company
     let fetchLeave= async (req,res)=>
     {
@@ -155,22 +183,44 @@ let  fetchLeaveByMonthAndYear = async (req, res) => {
   }
 };
 
-   const updateLeaveStatus = async (req, res) => {
-    try {
-        const { LeaveId, LeaveStatus } = req.body;
+  const updateLeaveStatus = async (req, res) => {
+  try {
+    const { LeaveId, LeaveStatus } = req.body;
 
-        const result = await Leave.findByIdAndUpdate(
-            LeaveId,
-            { LeaveStatus },
-            { new: true }
-        );
+    // 1. Check if the leave exists
+    const existingLeave = await Leave.findById(LeaveId);
+    if (!existingLeave) {
+      return res.status(404).json({ message: "Leave not found" });
+    }
 
-        res.status(200).json({
-            data: result,
-            message: "Leave status updated",
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Error updating leave status", error});
-}
+    // 2. Restrict update based on current status
+    if (existingLeave.LeaveStatus === "approved" && LeaveStatus !== "approved") {
+      return res.status(400).json({
+        message: "Cannot change status. Approved leave cannot be modified or rejected.",
+      });
+    }
+
+    if (existingLeave.LeaveStatus === "rejected" && LeaveStatus !== "rejected") {
+      return res.status(400).json({
+        message: "Cannot update status. Rejected leave cannot be modified.",
+      });
+    }
+
+    // 3. Proceed with valid update
+    const result = await Leave.findByIdAndUpdate(
+      LeaveId,
+      { LeaveStatus },
+      { new: true }
+    );
+
+    res.status(200).json({
+      data: result,
+      message: "Leave status updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating leave status:", error);
+    res.status(500).json({ message: "Error updating leave status", error });
+  }
 };
+
 export {AddLeave, fetchLeave, fetchLeaveByCompanyId, fetchLeaveByMonthAndYear, fetchLeaveByEmployeeId, updateLeaveStatus}

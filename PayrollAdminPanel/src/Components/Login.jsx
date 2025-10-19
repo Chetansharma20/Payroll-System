@@ -8,20 +8,24 @@ import { login } from '../ReduxWork/UserSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+const CompanyLogin = async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const getData = Object.fromEntries(formData.entries());
+  
+  try {
+    const result = await axios.post("http://localhost:5000/api/companylogin", getData);
+    const token = result.data.token || result.data.data.token; // adjust based on response
+    localStorage.setItem('token', token); // store the JWT
+    
+    dispatch(login(result.data.data));
+    navigate('/employee/employeelist');
+  } catch (error) {
+    console.log(error.response);
+  }
+};
 
-  const CompanyLogin = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const getData = Object.fromEntries(formData.entries());
-
-    try {
-      const result = await axios.post("http://localhost:5000/api/companylogin", getData);
-      dispatch(login(result.data.data));
-      navigate('/employee/employeelist');
-    } catch (error) {
-      console.log(error.response);
-    }
-  };
 
   return (
     <Box

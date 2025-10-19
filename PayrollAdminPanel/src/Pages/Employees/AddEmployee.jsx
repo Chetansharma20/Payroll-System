@@ -23,8 +23,10 @@ import {
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import API_ENDPOINTS from '../../config';
 
 const AddEmployee = () => {
+  const token = localStorage.getItem("token");
     const [openDialog, setOpenDialog] = useState(false);
     const[snackbarOpen, setSnackbarOpen] = useState(false);
      const openAddDialog = () => {
@@ -47,7 +49,7 @@ const [panCard, setPanCard] = useState(null);
 const [passBook, setPassBook] = useState(null);
 const [degree, setDegree] = useState(null);
 
-  let { companyData } = useSelector((state) => state.user)
+  let { companyData } = useSelector((state) => state.company)
   console.log(companyData._id)
   const SubmitEmployeeData = async (e) => {
     e.preventDefault();
@@ -59,10 +61,11 @@ const [degree, setDegree] = useState(null);
   
   
 
-      let result = await axios.post('http://localhost:5000/api/addemployee', { ...reqData, EmployeePhoto: employeePhoto, AdhaarCard:aadhaarCard, PanCard:panCard, PassBook:passBook, Degree:degree,  CompanyId: companyData._id },
+      let result = await axios.post(API_ENDPOINTS.REGISTER.EMPLOYEE, { ...reqData, EmployeePhoto: employeePhoto, AdhaarCard:aadhaarCard, PanCard:panCard, PassBook:passBook, Degree:degree,  CompanyId: companyData._id },
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+             'Authorization': `Bearer ${token}`  
           }
         });
       console.log(result.data.data)
@@ -85,7 +88,7 @@ useEffect(()=>
 {
   let getBranch = async()=>
   {
-    let result = await axios.post("http://localhost:5000/api/getbranchbycompany", {CompanyId:companyData._id})
+    let result = await axios.post(API_ENDPOINTS.BRANCH.GET_BY_COMPANY, {CompanyId:companyData._id})
     console.log(result)
     setAllBranch(result.data.data)
   }
@@ -98,7 +101,7 @@ useEffect(()=>
 {
     let fetchDepartment = async()=>
     {
-        let result = await axios.post("http://localhost:5000/api/fetchdepartmentbycompany", {CompanyId:companyData._id})
+        let result = await axios.post(API_ENDPOINTS.DEPARTMENT.FETCH_BY_COMPANY, {CompanyId:companyData._id})
         console.log(result.data.data)
         const formattedData = result.data.map(dep => ({
             ...dep,
@@ -113,7 +116,7 @@ useEffect(()=>
   {
       let fetchDesignation = async()=>
       {
-          let result = await axios.post("http://localhost:5000/api/fetchdesignationbycompany", {CompanyId:companyData._id})
+          let result = await axios.post(API_ENDPOINTS.DESIGNATION.FETCH_BY_COMPANY, {CompanyId:companyData._id})
           console.log(result.data.data)
           const formattedData = result.data.map(des => ({
               ...des,
@@ -171,7 +174,7 @@ useEffect(()=>
     <TextField size="small" label="Password" name="EmployeePassword" type="password" required />
     <FormControl>
       <FormLabel>Gender</FormLabel>
-      <RadioGroup row name="EmployeeGender">
+      <RadioGroup row name="EmployeeGender" required>
         <FormControlLabel value="Female" control={<Radio size="small" />} label="Female" />
         <FormControlLabel value="Male" control={<Radio size="small" />} label="Male" />
         <FormControlLabel value="Other" control={<Radio size="small" />} label="Others" />

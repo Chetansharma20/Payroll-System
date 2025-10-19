@@ -12,9 +12,13 @@ import { BankRouter } from "./src/routes/BankRouter.js";
 import cors from "cors"
 import { DepartmnetRouter } from "./src/routes/DepartmentRoutes.js";
 import { DesignationRouter } from "./src/routes/DesignationRoutes.js";
-import { OverviewRouter } from "./src/routes/overviewRouter.js";
+
 import { SalarySettingsRouter } from "./src/routes/SalarySettingsRouter.js";
 import { SalarySlipRouter } from "./src/routes/SalarySlipRouter.js";
+import dotenv from "dotenv";
+import { OverviewRouter } from "./src/routes/OverviewRouter.js";
+
+dotenv.config();
 
 
 let Server = express()

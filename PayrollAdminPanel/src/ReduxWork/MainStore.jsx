@@ -1,52 +1,56 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import CompanyReducer,  { logout } from './UserSlice'
-import persistReducer from 'redux-persist/es/persistReducer';
-import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
-import persistStore from 'redux-persist/es/persistStore';
+import { persistReducer, persistStore } from "redux-persist";
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
+import CompanyReducer, { logout } from "./UserSlice";
+import EmployeeReducer from "./EmployeeSlice";
 
+// 🧠 Middleware: optional session timeout (you can remove this if unnecessary)
+const timeoutMiddleware = (store) => (next) => (action) => {
+  const result = next(action);
+  if (action.type === "auth/sessionExpired") {
+    setTimeout(() => {
+      store.dispatch(logout());
+    }, 5000);
+  }
+  return result;
+};
 
+// 🔒 Persistence Config
+const persistConfig = {
+  key: "root",
+  storage,
+  version: 1,
+};
 
-const timeoutMiddleware = store=> next => action =>
-{
-    const result = next(action);
-    if (action.type === '/') 
-        {
-            setTimeout(()=>
-            {
-                store.dispatch(logout())
-            },5000)
-        
-    }
-    return result
-}
-
-const persistConfig  = {
-    key:"user",
-    version:1,
-    storage,
-}
+// 🧩 Combine Reducers
 const rootReducer = combineReducers({
-    user:CompanyReducer
-})
-const persistedReducer  = persistReducer(persistConfig, rootReducer)
+  company: CompanyReducer,
+  employee: EmployeeReducer,
+});
 
- const MainStore = configureStore({
-    reducer:persistedReducer,
-    middleware:(getDefaultMiddleware)=>
-        getDefaultMiddleware({serializableCheck:
-            {
-                ignoreActions:[FLUSH, REHYDRATE, PAUSE, PERSIST,PURGE,REGISTER],}
-                ,})
-                .concat(timeoutMiddleware)
-            }
-        )
-            
-// let MainStore = configureStore({
-//     reducer:{
-//         user: CompanyReducer
-//     }
+// ⚙️ Persisted Reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+// 🏗️ Configure Store
+const MainStore = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoreActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(timeoutMiddleware),
+});
+
+// 🧱 Persistor
+export const Persistor = persistStore(MainStore);
 export default MainStore;
-export const Persistor = persistStore(MainStore)

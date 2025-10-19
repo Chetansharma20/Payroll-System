@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Autocomplete,
@@ -16,135 +17,155 @@ import {
   Select,
   Snackbar,
   TextField,
-  Typography
+  Typography,
+  Box
 } from '@mui/material';
-import { Box } from '@mui/system';
 import { DataGrid } from '@mui/x-data-grid';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import API_ENDPOINTS from "../../config";
+
 
 const Leave = () => {
-  const { companyData } = useSelector((state) => state.user);
+  const token = localStorage.getItem('token');
+  const { companyData } = useSelector((state) => state.company);
+
   const [employees, setEmployees] = useState([]);
   const [EmployeeId, setEmployeeId] = useState('');
   const [leaveData, setLeaveData] = useState([]);
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
-  const [openDialog, setopenDialog] = useState(false);
-   const [openDialog1, setopenDialog1] = useState(false);
   const [selectMonth, setSelectedMonth] = useState(dayjs());
   const [selectYear, setSelectedYear] = useState(dayjs());
   const [selectedLeave, setSelectedLeave] = useState(null);
-const [updatedStatus, setUpdatedStatus] = useState('');
-  const openAddDialog = () => setopenDialog(true);
-  const closeAddDialog = () => setopenDialog(false);
+  const [updatedStatus, setUpdatedStatus] = useState('pending');
 
-  const openAddDialog1 = () => setopenDialog1(true);
-  const closeAddDialog1 = () => setopenDialog1(false);
- const[snackbarOpen, setSnackbarOpen] = useState(false);
-  const handleSnackbarClose = ()=>
-  {
-    setSnackbarOpen(false)
-  }
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog1, setOpenDialog1] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  // ---------------- FETCH EMPLOYEES ----------------
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await axios.post(
+          API_ENDPOINTS.EMPLOYEES.LIST_BY_COMPANY,
+          { CompanyId: companyData._id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const formatted = response.data.data.map((emp) => ({
+          ...emp,
+          EmployeeName: emp.EmployeeName || 'Unnamed',
+          _id: emp._id
+        }));
+        setEmployees(formatted);
+      } catch (err) {
+        console.error('Failed to fetch employees:', err);
+      }
+    };
+
+    if (companyData?._id) fetchEmployees();
+  }, [companyData]);
+
+  // ---------------- FETCH LEAVE DATA ----------------
+  const fetchLeave = async () => {
+    if (!EmployeeId || !companyData?._id) {
+      setLeaveData([]);
+      return;
+    }
+
+    const month = selectMonth?.format('MM');
+    const year = selectYear?.format('YYYY');
+
+    try {
+      const response = await axios.post(
+        API_ENDPOINTS.LEAVE.FETCH_BY_MONTH_YEAR,
+        {
+          EmployeeID: EmployeeId,
+          month,
+          year,
+          CompanyId: companyData._id
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setLeaveData(response.data.data);
+    } catch (error) {
+      console.error('Error fetching leaves:', error);
+      setLeaveData([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeave();
+  }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
+
+  // ---------------- SUBMIT LEAVE ----------------
   const submitLeave = async (e) => {
     e.preventDefault();
-    const getleave = new FormData(e.target);
-    const reqdata = Object.fromEntries(getleave.entries());
+    if (!EmployeeId) return alert('Select an employee first');
+
+    if (fromDate.isAfter(toDate)) {
+      alert('From Date cannot be after To Date');
+      return;
+    }
+
+    const reqdata = new FormData(e.target);
+    const data = Object.fromEntries(reqdata.entries());
     const FormattedFrom = fromDate.format('YYYY-MM-DD');
     const FormattedTo = toDate.format('YYYY-MM-DD');
 
     try {
-      const leave = await axios.post('http://localhost:5000/api/addleave', {
-        ...reqdata,
-        CompanyId: companyData._id,
-        EmployeeID: EmployeeId,
-        FromDate: FormattedFrom,
-        ToDate: FormattedTo
-      });
-      // alert('Leave added');
-       setSnackbarOpen(true)
-      setopenDialog(false);
+      await axios.post(
+        API_ENDPOINTS.LEAVE.ADD,
+        {
+          ...data,
+          CompanyId: companyData._id,
+          EmployeeID: EmployeeId,
+          FromDate: FormattedFrom,
+          ToDate: FormattedTo,
+          LeaveStatus: updatedStatus
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSnackbarMessage('Leave added successfully');
+      setSnackbarOpen(true);
+      setOpenDialog(false);
+      fetchLeave();
     } catch (error) {
       const message = error?.response?.data?.message || 'Something went wrong';
       alert(message);
     }
   };
- const updateLeaveStatus = async () => {
+
+  // ---------------- UPDATE LEAVE STATUS ----------------
+  const updateLeaveStatus = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/updateleavestatus', {
-        LeaveId: selectedLeave._id,
-        LeaveStatus: updatedStatus
-      });
-      // alert("Leave status updated");
-       setSnackbarOpen(true)
-      setopenDialog1(false);
-      setEmployeeId(EmployeeId); 
+      await axios.post(
+        API_ENDPOINTS.LEAVE.UPDATE_STATUS,
+        {
+          LeaveId: selectedLeave._id,
+          LeaveStatus: updatedStatus
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSnackbarMessage('Leave status updated');
+      setSnackbarOpen(true);
+      setOpenDialog1(false);
+      fetchLeave();
     } catch (error) {
-      alert("Failed to update leave status", 'error');
+      alert('Failed to update leave status');
     }
   };
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await axios.post('http://localhost:5000/api/getemployeebycompany', {
-          CompanyId: companyData._id
-        });
-
-        const formattedData = response.data.data.map((emp) => ({
-          ...emp,
-          EmployeeName: emp.EmployeeName || 'Unnamed',
-          _id: emp._id
-        }));
-
-        setEmployees(formattedData);
-      } catch (error) {
-        console.error('Failed to fetch employees:', error);
-      }
-    };
-
-    if (companyData?._id) {
-      fetchEmployees();
-    }
-  }, [companyData]);
-
-  useEffect(() => {
-    const fetchLeave = async () => {
-      if (!EmployeeId || !companyData?._id) {
-        setLeaveData([]);
-        return;
-      }
-
-      const month = selectMonth?.format('MM');
-      const year = selectYear?.format('YYYY');
-
-      try {
-        const url =
-          month && year
-            ? 'http://localhost:5000/api/fetchleavebymonthandyear'
-            : 'http://localhost:5000/api/fetchleavebycompanyid';
-
-        const response = await axios.post(url, {
-          EmployeeID: EmployeeId,
-          month,
-          year,
-          CompanyId: companyData._id
-        });
-
-        setLeaveData(response.data.data);
-      } catch (error) {
-        console.error('Error fetching attendance data:', error);
-        setLeaveData([]);
-      }
-    };
-
-    fetchLeave();
-  }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
-
+  // ---------------- DATAGRID COLUMNS ----------------
   const columns = [
     {
       field: 'EmployeeID',
@@ -164,36 +185,31 @@ const [updatedStatus, setUpdatedStatus] = useState('');
       flex: 1,
       renderCell: (params) => dayjs(params.row.ToDate).format('YYYY-MM-DD')
     },
-     {
-      field: 'LeaveStatus',
-      headerName: 'Status',
-      flex: 1,
-  
-    },
-      {
-            field: 'status',
-            headerName: 'Update',
-            width: 160,
-            renderCell: (params) => (
-              <Button
-                variant="contained"
-                size="small"
-                color="info"
-                sx={{ borderRadius: '20px', textTransform: 'none' }}
-                onClick={() => {   setSelectedLeave(params.row);
-     setUpdatedStatus(params.row.leaveStatus);
-   openAddDialog1(params.row)}}
-              >
-                update
-              </Button>
-            )
-          }
+    { field: 'LeaveType', headerName: 'Type', flex: 1 },
+    { field: 'LeaveStatus', headerName: 'Status', flex: 1 },
+    {
+      field: 'action',
+      headerName: 'Update',
+      width: 150,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          size="small"
+          color="info"
+          sx={{ borderRadius: '20px', textTransform: 'none' }}
+          onClick={() => {
+            setSelectedLeave(params.row);
+            setUpdatedStatus(params.row.LeaveStatus);
+            setOpenDialog1(true);
+          }}
+        >
+          Update
+        </Button>
+      )
+    }
   ];
 
-  const rows = leaveData.map((entry) => ({
-    id: entry._id,
-    ...entry
-  }));
+  const rows = leaveData.map((entry) => ({ id: entry._id, ...entry }));
 
   return (
     <>
@@ -202,22 +218,49 @@ const [updatedStatus, setUpdatedStatus] = useState('');
           Leave Tracking
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* Filters */}
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            mb: 2,
+            alignItems: 'center',
+            flexWrap: 'wrap'
+          }}
+        >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker views={['month']} value={selectMonth} onChange={setSelectedMonth} label="Select Month" />
-            <DatePicker views={['year']} value={selectYear} onChange={setSelectedYear} label="Select Year" />
+            <DatePicker
+              views={['month']}
+              value={selectMonth}
+              onChange={setSelectedMonth}
+              label="Select Month"
+            />
+            <DatePicker
+              views={['year']}
+              value={selectYear}
+              onChange={setSelectedYear}
+              label="Select Year"
+            />
           </LocalizationProvider>
 
           <Autocomplete
             options={employees}
             getOptionLabel={(option) => option.EmployeeName || ''}
             value={employees.find((emp) => emp._id === EmployeeId) || null}
-            onChange={(event, newValue) => setEmployeeId(newValue ? newValue._id : '')}
+            onChange={(e, newValue) =>
+              setEmployeeId(newValue ? newValue._id : '')
+            }
             sx={{ minWidth: 250 }}
-            renderInput={(params) => <TextField {...params} label="Select Employee" />}
+            renderInput={(params) => (
+              <TextField {...params} label="Select Employee" />
+            )}
           />
 
-          <Button variant="contained" sx={{ backgroundColor: '#2980b9' }} onClick={openAddDialog}>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: '#2980b9' }}
+            onClick={() => setOpenDialog(true)}
+          >
             Add Leave
           </Button>
         </Box>
@@ -227,36 +270,44 @@ const [updatedStatus, setUpdatedStatus] = useState('');
         </Box>
       </Box>
 
-      <Dialog open={openDialog} onClose={closeAddDialog} maxWidth="sm" fullWidth>
+      {/* ADD LEAVE DIALOG */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
         <Box
           component="form"
           onSubmit={submitLeave}
           sx={{ px: 3, py: 2, display: 'flex', flexDirection: 'column', gap: 2 }}
         >
-          <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>Add Leave</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+            Add Leave
+          </DialogTitle>
+
           <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Autocomplete
               options={employees}
               getOptionLabel={(option) => option.EmployeeName || ''}
               value={employees.find((emp) => emp._id === EmployeeId) || null}
-              onChange={(event, newValue) => setEmployeeId(newValue ? newValue._id : '')}
-              renderInput={(params) => <TextField {...params} label="Select Employee" fullWidth required />}
+              onChange={(event, newValue) =>
+                setEmployeeId(newValue ? newValue._id : '')
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Select Employee" fullWidth required />
+              )}
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="From Date"
                 value={fromDate}
-                onChange={(newValue) => setFromDate(newValue)}
+                onChange={setFromDate}
               />
-              <DatePicker
-                label="To Date"
-                value={toDate}
-                onChange={(newValue) => setToDate(newValue)}
-              />
+              <DatePicker label="To Date" value={toDate} onChange={setToDate} />
             </LocalizationProvider>
 
-            <TextField label="Leave Description" name="LeaveDescription" required />
+            <TextField
+              label="Leave Description"
+              name="LeaveDescription"
+              required
+            />
 
             <FormControl fullWidth>
               <InputLabel id="leave-type-label">Leave Type</InputLabel>
@@ -275,11 +326,27 @@ const [updatedStatus, setUpdatedStatus] = useState('');
 
             <FormControl>
               <FormLabel>Leave Status</FormLabel>
-              <RadioGroup row name="LeaveStatus" value={updatedStatus}
-              onChange={(e) => setUpdatedStatus(e.target.value)}>
-                <FormControlLabel value="pending" control={<Radio size="small" />} label="Pending" />
-                <FormControlLabel value="approved" control={<Radio size="small" />} label="Approved" />
-                <FormControlLabel value="reject" control={<Radio size="small" />} label="Reject" />
+              <RadioGroup
+                row
+                name="LeaveStatus"
+                value={updatedStatus}
+                onChange={(e) => setUpdatedStatus(e.target.value)}
+              >
+                <FormControlLabel
+                  value="pending"
+                  control={<Radio size="small" />}
+                  label="Pending"
+                />
+                <FormControlLabel
+                  value="approved"
+                  control={<Radio size="small" />}
+                  label="Approved"
+                />
+                <FormControlLabel
+                  value="rejected"
+                  control={<Radio size="small" />}
+                  label="Rejected"
+                />
               </RadioGroup>
             </FormControl>
           </DialogContent>
@@ -288,45 +355,50 @@ const [updatedStatus, setUpdatedStatus] = useState('');
             <Button type="submit" variant="contained" color="primary">
               Submit
             </Button>
-            <Button onClick={closeAddDialog} variant="contained" color="error">
+            <Button onClick={() => setOpenDialog(false)} variant="contained" color="error">
               Close
             </Button>
           </DialogActions>
         </Box>
       </Dialog>
 
+      {/* UPDATE LEAVE STATUS DIALOG */}
+      <Dialog open={openDialog1} onClose={() => setOpenDialog1(false)}>
+        <form onSubmit={updateLeaveStatus}>
+          <DialogTitle>Update Leave Status</DialogTitle>
+          <DialogContent>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Status</FormLabel>
+              <RadioGroup
+                name="LeaveStatus"
+                value={updatedStatus}
+                onChange={(e) => setUpdatedStatus(e.target.value)}
+              >
+                <FormControlLabel value="approved" control={<Radio />} label="Approved" />
+                <FormControlLabel value="rejected" control={<Radio />} label="Rejected" />
+              </RadioGroup>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog1(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Submit
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
-
-     <Dialog open={openDialog1} onClose={closeAddDialog1}>
-  <form onSubmit={updateLeaveStatus}>
-    <DialogTitle>Select an Option</DialogTitle>
-    <DialogContent>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Options</FormLabel>
-        <RadioGroup name="LeaveStatus"    value={updatedStatus}
-              onChange={(e) => setUpdatedStatus(e.target.value)}
->
-          <FormControlLabel value="approved" control={<Radio />} label="Approved" />
-          <FormControlLabel value="reject" control={<Radio />} label="Reject" />
-        </RadioGroup>
-      </FormControl>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={closeAddDialog1}>Cancel</Button>
-      <Button type="submit" variant="contained">Submit</Button>
-    </DialogActions>
-  </form>
-</Dialog>
-  <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={3000}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-            Leave added successfully
-          </Alert>
-        </Snackbar>
+      {/* SNACKBAR */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" onClose={() => setSnackbarOpen(false)}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

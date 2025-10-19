@@ -12,4 +12,4 @@ OverviewRouter.post("/getattendancecount",getAttendanceCount)
 
 OverviewRouter.post("/getattendancecountbyemployee",getAttendanceCountByEmployee)
 OverviewRouter.post("/getleavescountbyemployee",getLeavesCountByEmployee)
-export{OverviewRouter}
+export{ OverviewRouter }

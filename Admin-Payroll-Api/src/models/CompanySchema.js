@@ -12,7 +12,8 @@ let CompanySchema = mongoose.Schema({
         type:Boolean, 
         default:false
     },
-    CompanyPassword:{type:String}
+    CompanyPassword:{type:String},
+     role: { type: String, default: "Company" },
   
 },{timestamps:true})
 export const Company = mongoose.model("Company", CompanySchema)
