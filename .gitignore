@@ -9,17 +9,29 @@ PayrollAdminPanel/node_modules/
 Admin-Payroll-Api/.env
 PayrollAdminPanel/.env
 
-# Build and dist folders
+# Build outputs
 dist/
 build/
 PayrollAdminPanel/dist/
 PayrollAdminPanel/build/
 
-# Log files
+# Uploads and user files
+Admin-Payroll-Api/UploadImages/
+Admin-Payroll-Api/uploads/
+uploads/
+*.jpg
+*.jpeg
+*.png
+*.pdf
+
+# Logs
 *.log
 
-# OS / editor junk
+# OS/editor junk
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+
+# Temporary files
+*.tmp
