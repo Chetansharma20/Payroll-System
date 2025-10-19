@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+Admin-Payroll-Api/node_modules/
+PayrollAdminPanel/node_modules/
+
+# Environment files
+.env
+.env.*
+Admin-Payroll-Api/.env
+PayrollAdminPanel/.env
+
+# Build and dist folders
+dist/
+build/
+PayrollAdminPanel/dist/
+PayrollAdminPanel/build/
+
+# Log files
+*.log
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
