@@ -10,7 +10,8 @@ import {
   DialogActions,
   TextField,
   Snackbar,
-  Alert
+  Alert,
+  Avatar
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';

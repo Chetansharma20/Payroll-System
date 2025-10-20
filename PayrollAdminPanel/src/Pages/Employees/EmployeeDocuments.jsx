@@ -144,7 +144,7 @@ const SubmitEmployeeDocument = async (e) => {
       headerName: 'Photo',
       width: 100,
       renderCell: (params) =>
-        params.value ? <Avatar src={params.value} alt="photo" /> : 'N/A'
+        params.value? <Avatar src={params.value} alt="photo" /> : 'N/A'
     },
     { field: 'EmployeeName', headerName: 'Name', width: 150 },
     {
