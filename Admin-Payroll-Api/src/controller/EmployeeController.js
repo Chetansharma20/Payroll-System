@@ -1,6 +1,26 @@
 import { Employee } from "../models/EmployeeSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+
+// -------------------- Cloudinary Setup --------------------
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "EmployeeDocs",
+    allowed_formats: ["jpg", "jpeg", "png", "pdf"],
+  },
+});
+
+export const upload = multer({ storage });
 
 // -------------------- Add Employee --------------------
 let AddEmployee = async (req, res) => {
@@ -24,11 +44,11 @@ let AddEmployee = async (req, res) => {
       BranchName,
     } = req.body;
 
-    const EmployeePhoto = req.files?.EmployeePhoto?.[0]?.path?.replace("\\", "/") || null;
-    const AdhaarCard = req.files?.AdhaarCard?.[0]?.path?.replace("\\", "/") || null;
-    const PanCard = req.files?.PanCard?.[0]?.path?.replace("\\", "/") || null;
-    const PassBook = req.files?.PassBook?.[0]?.path?.replace("\\", "/") || null;
-    const Degree = req.files?.Degree?.[0]?.path?.replace("\\", "/") || null;
+    const EmployeePhoto = req.files?.EmployeePhoto?.[0]?.path || null;
+    const AdhaarCard = req.files?.AdhaarCard?.[0]?.path || null;
+    const PanCard = req.files?.PanCard?.[0]?.path || null;
+    const PassBook = req.files?.PassBook?.[0]?.path || null;
+    const Degree = req.files?.Degree?.[0]?.path || null;
 
     const salt = await bcrypt.genSalt(10);
     const encryptPassword = await bcrypt.hash(EmployeePassword, salt);
@@ -80,22 +100,13 @@ let EmployeeLogin = async (req, res) => {
     const { EmployeeEmail, EmployeePassword } = req.body;
     const loggedUser = await Employee.findOne({ EmployeeEmail }).populate("CompanyId");
 
-    if (!loggedUser) {
-      return res.status(400).json({ message: "Employee not registered" });
-    }
+    if (!loggedUser) return res.status(400).json({ message: "Employee not registered" });
 
     const isValidPassword = await bcrypt.compare(EmployeePassword, loggedUser.EmployeePassword);
-    if (!isValidPassword) {
-      return res.status(400).json({ message: "Invalid password" });
-    }
+    if (!isValidPassword) return res.status(400).json({ message: "Invalid password" });
 
-    // JWT token
     const token = jwt.sign(
-      {
-        id: loggedUser._id,
-        email: loggedUser.EmployeeEmail,
-        role: loggedUser.role,
-      },
+      { id: loggedUser._id, email: loggedUser.EmployeeEmail, role: loggedUser.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
     );
@@ -137,7 +148,7 @@ let UpdateEmployee = async (req, res) => {
     const updatedFields = {};
     ["EmployeePhoto", "AdhaarCard", "PanCard", "PassBook", "Degree"].forEach((field) => {
       if (req.files?.[field]?.[0]) {
-        updatedFields[field] = req.files[field][0].path.replace("\\", "/");
+        updatedFields[field] = req.files[field][0].path; // cloudinary URL
       }
     });
 
@@ -169,7 +180,6 @@ let DeleteEmployee = async (req, res) => {
 let getEmployeeByCompany = async (req, res) => {
   try {
     const { CompanyId } = req.body;
-  
     const result = await Employee.find({ CompanyId }).select("-EmployeePassword");
     res.status(200).json({ data: result, message: "Employees fetched successfully" });
   } catch (error) {
