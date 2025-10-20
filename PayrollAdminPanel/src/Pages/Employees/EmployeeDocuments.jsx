@@ -31,15 +31,14 @@ const EmployeeDocuments = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  // ✅ Fetch Employees
+  // Fetch Employees
   const fetchEmployees = async () => {
     try {
-     const result = await axios.post(
-  API_ENDPOINTS.EMPLOYEE_DOCUMENTS.FETCH_BY_COMPANY,
-  { CompanyId: companyData._id },
-  { headers: { "Authorization": `Bearer ${token}` } }
-);
-
+      const result = await axios.post(
+        API_ENDPOINTS.EMPLOYEE_DOCUMENTS.FETCH_BY_COMPANY,
+        { CompanyId: companyData._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       const formattedData = result.data.data.map((emp) => ({
         ...emp,
@@ -57,7 +56,7 @@ const EmployeeDocuments = () => {
     if (companyData?._id) fetchEmployees();
   }, [companyData]);
 
-  // ✅ Handle Dialog
+  // Dialog handlers
   const openAddDialog = (employee) => {
     setSelectedEmployeeId(employee.EmployeeId);
     setOpenDialog(true);
@@ -68,7 +67,6 @@ const EmployeeDocuments = () => {
     resetForm();
   };
 
-  // ✅ Reset form fields after upload or close
   const resetForm = () => {
     setEmployeePhoto(null);
     setAadhaarCard(null);
@@ -77,7 +75,7 @@ const EmployeeDocuments = () => {
     setDegree(null);
   };
 
-  // ✅ Submit Documents
+  // Submit Documents
   const SubmitEmployeeDocument = async (e) => {
     e.preventDefault();
     try {
@@ -89,19 +87,16 @@ const EmployeeDocuments = () => {
       if (passBook) formData.append("PassBook", passBook);
       if (degree) formData.append("Degree", degree);
 
-      // 🔥 Await the upload request
       await axios.put(API_ENDPOINTS.EMPLOYEE_DOCUMENTS.UPDATE, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
 
-      // ✅ Show success and refresh table instantly
       setSnackbarOpen(true);
       closeAddDialog();
-      await fetchEmployees(); // Re-fetch latest employee data
-
+      await fetchEmployees();
     } catch (error) {
       const message = error?.response?.data?.message || "Something went wrong";
       console.error(error);
@@ -111,16 +106,14 @@ const EmployeeDocuments = () => {
 
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
+  // Columns for DataGrid
   const columns = [
     {
       field: 'EmployeePhoto',
       headerName: 'Photo',
       width: 100,
       renderCell: (params) =>
-        params.value ? (
-<Avatar src={API_ENDPOINTS.EMPLOYEE_DOCUMENTS.FILE_URL(params.value)} alt="photo" />
-
-        ) : 'N/A'
+        params.value ? <Avatar src={params.value} alt="photo" /> : 'N/A'
     },
     { field: 'EmployeeName', headerName: 'Name', width: 150 },
     {
@@ -129,14 +122,9 @@ const EmployeeDocuments = () => {
       width: 130,
       renderCell: (params) =>
         params.value ? (
-         <a
-  href={API_ENDPOINTS.EMPLOYEE_DOCUMENTS.FILE_URL(params.value)}
-  target="_blank"
-  rel="noopener noreferrer"
->
-  View
-</a>
- 
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
+            View
+          </a>
         ) : 'N/A'
     },
     {
@@ -145,11 +133,7 @@ const EmployeeDocuments = () => {
       width: 130,
       renderCell: (params) =>
         params.value ? (
-          <a
-            href={`http://localhost:5000/${params.value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
             View
           </a>
         ) : 'N/A'
@@ -160,11 +144,7 @@ const EmployeeDocuments = () => {
       width: 130,
       renderCell: (params) =>
         params.value ? (
-          <a
-            href={`http://localhost:5000/${params.value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
             View
           </a>
         ) : 'N/A'
@@ -175,11 +155,7 @@ const EmployeeDocuments = () => {
       width: 130,
       renderCell: (params) =>
         params.value ? (
-          <a
-            href={`http://localhost:5000/${params.value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
             View
           </a>
         ) : 'N/A'

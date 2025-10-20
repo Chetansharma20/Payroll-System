@@ -1,18 +1,19 @@
 import express from "express";
-import { AddEmployee, DeleteEmployee, EmployeeLogin, fetchEmployee, getEmployeeByCompany, UpdateEmployee } from "../controller/EmployeeController.js";
-import { Upload } from "../MiddleWare/FileUploadMiddleWare.js";
+import { AddEmployee, DeleteEmployee, EmployeeLogin, fetchEmployee, getEmployeeByCompany, UpdateEmployee, upload } from "../controller/EmployeeController.js";
+
 import { verifyToken, verifyRole } from "../MiddleWare/auth.js";
 
 const EmployeeRouter = express.Router();
 
 // File upload configuration
-const employeeUploadFields = Upload.fields([
+const employeeUploadFields = upload.fields([
   { name: "EmployeePhoto", maxCount: 1 },
   { name: "AdhaarCard", maxCount: 1 },
   { name: "PanCard", maxCount: 1 },
   { name: "Degree", maxCount: 1 },
   { name: "PassBook", maxCount: 1 },
 ]);
+
 
 // -------------------- Public Routes --------------------
 // Employee login
