@@ -90,7 +90,7 @@ const EmployeeDocuments = () => {
       if (degree) formData.append("Degree", degree);
 
       // 🔥 Await the upload request
-      await axios.put('http://localhost:5000/api/updateemployee', formData, {
+      await axios.put(API_ENDPOINTS.EMPLOYEE_DOCUMENTS.UPDATE, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           "Authorization": `Bearer ${token}`

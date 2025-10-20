@@ -41,21 +41,16 @@ catch(error)
       <Box
         sx={{
           maxWidth: '800',
-          // mx: 'auto',
+         
           display: 'flex',
-          // alignItems: 'center',
-          // justifyContent: 'center',
-          // padding: 1,
+        
           mr:35,
-          // ml:6,
+         
           flexDirection: 'column',
           p: 4,
           borderRadius: 3,
           boxShadow: 4
-          // position:'absolute',
-          // left:50,
-          // right:50,
-          // top:80
+       
         }}
       >
         <Typography variant="h5" align="center" gutterBottom sx={{ fontWeight: 700, color: '#2e7d32',}}> 
@@ -94,10 +89,7 @@ required />
 name='CompanyAddress' 
 type="text" 
 required />
-{/* <TextField label="Registration No" 
-name='RegistrationNo' 
-type="text" 
-required /> */}
+
  </Box>
   
    <Box sx={{ flex: 1, minWidth: '48%', display: 'flex', flexDirection: 'column', gap: 2 }}> 
@@ -109,11 +101,7 @@ required />
 name='CompanyState' 
 type="text" 
 required />
-{/* <TextField label="Salary Heads" 
-name='SalaryHeads' 
-type="text" 
-required />
- */}
+
 
 
 
