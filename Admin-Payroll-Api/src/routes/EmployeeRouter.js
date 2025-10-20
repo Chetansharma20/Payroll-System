@@ -1,8 +1,8 @@
 import express from "express";
-import { AddEmployee, DeleteEmployee, EmployeeLogin, fetchEmployee, getEmployeeByCompany, UpdateEmployee, upload } from "../controller/EmployeeController.js";
+import { AddEmployee, DeleteEmployee, EmployeeLogin, fetchEmployee, getEmployeeByCompany, UpdateEmployee} from "../controller/EmployeeController.js";
 
 import { verifyToken, verifyRole } from "../MiddleWare/auth.js";
-
+import {upload} from '../MiddleWare/FileUploadMiddleWare.js'
 const EmployeeRouter = express.Router();
 
 // File upload configuration

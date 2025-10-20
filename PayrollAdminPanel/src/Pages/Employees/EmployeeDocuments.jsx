@@ -206,10 +206,10 @@ const EmployeeDocuments = () => {
       {/* Upload Dialog */}
       <Dialog open={openDialog} onClose={closeAddDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Upload Employee Documents
-          </Typography>
-        </DialogTitle>
+  <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+    Employee Documents
+  </Typography>
+</DialogTitle>
 
         <DialogContent dividers>
           <Box

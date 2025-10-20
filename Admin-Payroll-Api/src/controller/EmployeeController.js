@@ -140,27 +140,60 @@ let fetchEmployee = async (req, res) => {
 };
 
 // -------------------- Update Employee Documents --------------------
+// -------------------- Update Employee Documents --------------------
 let UpdateEmployee = async (req, res) => {
   try {
     const { EmployeeID } = req.body;
-    if (!EmployeeID) return res.status(400).json({ message: "EmployeeID is required" });
+    
+    // Validate EmployeeID
+    if (!EmployeeID) {
+      return res.status(400).json({ message: "EmployeeID is required" });
+    }
 
+    // Check if employee exists
+    const employee = await Employee.findById(EmployeeID);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    // Build update object from uploaded files
     const updatedFields = {};
-    ["EmployeePhoto", "AdhaarCard", "PanCard", "PassBook", "Degree"].forEach((field) => {
-      if (req.files?.[field]?.[0]) {
-        updatedFields[field] = req.files[field][0].path; // cloudinary URL
-      }
-    });
+    
+    if (req.files) {
+      ["EmployeePhoto", "AdhaarCard", "PanCard", "PassBook", "Degree"].forEach((field) => {
+        if (req.files[field] && req.files[field][0]) {
+          updatedFields[field] = req.files[field][0].path;
+        }
+      });
+    }
 
-    const result = await Employee.findByIdAndUpdate(EmployeeID, updatedFields, { new: true }).select("-EmployeePassword");
+    // Check if any files were uploaded
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
+
+    // Update employee
+    const result = await Employee.findByIdAndUpdate(
+      EmployeeID, 
+      updatedFields, 
+      { new: true }
+    ).select("-EmployeePassword");
+
+    if (!result) {
+      return res.status(404).json({ message: "Failed to update employee" });
+    }
 
     res.status(200).json({
       data: result,
       message: "Employee documents updated successfully",
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error updating documents", error });
+    console.error("Error updating employee documents:", error);
+    res.status(500).json({ 
+      message: "Upload failed", 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
 
