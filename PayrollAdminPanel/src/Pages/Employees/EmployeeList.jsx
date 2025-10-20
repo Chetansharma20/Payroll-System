@@ -144,15 +144,9 @@ const EmployeeList = () => {
       field: 'EmployeePhoto',
       headerName: 'Photo',
       width: 100,
-      renderCell: (params) => (
-        <img
-          alt="photo"
-          src={API_ENDPOINTS.EMPLOYEES.PHOTO(params.row.EmployeePhoto)}
-          height={50}
-          width={50}
-          style={{ borderRadius: '50%', objectFit: 'cover' }}
-        />
-      )
+    renderCell: (params) =>
+        params.value ? <Avatar src={params.value} alt="photo" /> : 'N/A'
+      
     },
     { field: 'EmployeeName', headerName: 'Name', flex: 1 },
     { field: 'EmployeePhoneNo', headerName: 'Phone No', width: 120 },

@@ -76,24 +76,55 @@ const EmployeeDocuments = () => {
   };
 
   // Submit Documents
-  const SubmitEmployeeDocument = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("EmployeeID", selectedEmployeeId);
-      if (employeePhoto) formData.append("EmployeePhoto", employeePhoto);
-      if (aadhaarCard) formData.append("AdhaarCard", aadhaarCard);
-      if (panCard) formData.append("PanCard", panCard);
-      if (passBook) formData.append("PassBook", passBook);
-      if (degree) formData.append("Degree", degree);
+const SubmitEmployeeDocument = async (e) => {
+  e.preventDefault();
+  try {
+    const formData = new FormData();
+    formData.append("EmployeeID", selectedEmployeeId);
+    
+    // Log what we're sending
+    console.log("=== SENDING DATA ===");
+    console.log("EmployeeID:", selectedEmployeeId);
+    
+    if (employeePhoto) {
+      formData.append("EmployeePhoto", employeePhoto);
+      console.log("EmployeePhoto:", employeePhoto.name, employeePhoto.size);
+    }
+    if (aadhaarCard) {
+      formData.append("AdhaarCard", aadhaarCard);
+      console.log("AdhaarCard:", aadhaarCard.name, aadhaarCard.size);
+    }
+    if (panCard) {
+      formData.append("PanCard", panCard);
+      console.log("PanCard:", panCard.name, panCard.size);
+    }
+    if (passBook) {
+      formData.append("PassBook", passBook);
+      console.log("PassBook:", passBook.name, passBook.size);
+    }
+    if (degree) {
+      formData.append("Degree", degree);
+      console.log("Degree:", degree.name, degree.size);
+    }
 
-      await axios.put(API_ENDPOINTS.EMPLOYEE_DOCUMENTS.UPDATE, formData, {
+    // Log FormData contents
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    const response = await axios.put(
+      API_ENDPOINTS.EMPLOYEE_DOCUMENTS.UPDATE, 
+      formData, 
+      {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
         }
-      });
-
+      }
+    );
+    
+    console.log("Success:", response.data);
+    
       setSnackbarOpen(true);
       closeAddDialog();
       await fetchEmployees();
