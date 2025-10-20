@@ -46,7 +46,8 @@ Server.use("/api", OverviewRouter)
 Server.use("/api", SalarySettingsRouter)
 Server.use("/api", SalarySlipRouter)
 Server.use("/UploadImages", express.static("UploadImages"))
- Server.listen(5000,()=>
+const PORT = process.env.PORT || 5000
+ Server.listen(PORT,()=>
 {
     console.log("Server Started")
 
