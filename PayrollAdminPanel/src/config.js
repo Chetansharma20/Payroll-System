@@ -37,6 +37,8 @@ export const API_ENDPOINTS = {
   FETCH_EMPLOYEES: `${BASE_URL}/api/getemployeebycompany`,
   FETCH_SALARY_HEADS: `${BASE_URL}/api/salaryheadsbycompany`,
   SAVE_SETTINGS: `${BASE_URL}/api/addsalarysettings`,
+  ADD_SALARY_HEAD: `${BASE_URL}/api/addsalaryhead`,
+  DELETE_SALARY_HEAD: `${BASE_URL}/api/deletesalaryhead`,
 },
 SALARY: {
   FETCH_EMPLOYEES: `${BASE_URL}/api/getemployeebycompany`,

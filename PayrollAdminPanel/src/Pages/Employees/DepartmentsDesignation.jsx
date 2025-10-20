@@ -45,7 +45,7 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
     const designationdata = Object.fromEntries(formData.entries());
 
     try {
-      const result = await axios.post("http://localhost:5000/api/adddesignation", { ...designationdata, CompanyId: companyData._id });
+      const result = await axios.post(API_ENDPOINTS.DESIGNATION.ADD, { ...designationdata, CompanyId: companyData._id });
       setSnackbar({ open: true, message: 'Designation Added', severity: 'success' });
       closeAddDialog1();
       setAlldesignation(prev => [...prev, { ...designationdata, id: result.data?.data?._id }]);
@@ -59,7 +59,7 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
   const deleteDepartment = async (id) => {
     if (!window.confirm("Are you sure you want to delete this department?")) return;
     try {
-      const result = await axios.delete("http://localhost:5000/api/deletedepartment", { data: { DepartmentId: id } });
+      const result = await axios.delete(API_ENDPOINTS.DEPARTMENT.DELETE, { data: { DepartmentId: id } });
       setAlldepartments(prev => prev.filter(dep => dep.id !== id));
       setSnackbar({ open: true, message: result.data.message, severity: 'success' });
     } catch (error) {
@@ -72,7 +72,7 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
   const deleteDesignation = async (id) => {
     if (!window.confirm("Are you sure you want to delete this designation?")) return;
     try {
-      const result = await axios.delete("http://localhost:5000/api/deletedesignation", { data: { DesignationId: id } });
+      const result = await axios.delete(API_ENDPOINTS.DESIGNATION.DELETE, { data: { DesignationId: id } });
       setAlldesignation(prev => prev.filter(des => des.id !== id));
       setSnackbar({ open: true, message: result.data.message, severity: 'success' });
     } catch (error) {
@@ -85,7 +85,7 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
   useEffect(() => {
     const fetchDepartment = async () => {
       try {
-        const result = await axios.post("http://localhost:5000/api/fetchdepartmentbycompany", { CompanyId: companyData._id });
+        const result = await axios.post(API_ENDPOINTS.DEPARTMENT.FETCH_BY_COMPANY, { CompanyId: companyData._id });
         const formattedData = result.data.map(dep => ({ ...dep, id: dep._id }));
         setAlldepartments(formattedData);
       } catch (error) {
@@ -99,7 +99,7 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
   useEffect(() => {
     const fetchDesignation = async () => {
       try {
-        const result = await axios.post("http://localhost:5000/api/fetchdesignationbycompany", { CompanyId: companyData._id });
+        const result = await axios.post(API_ENDPOINTS.DESIGNATION.FETCH_BY_COMPANY, { CompanyId: companyData._id });
         const formattedData = result.data.map(des => ({ ...des, id: des._id }));
         setAlldesignation(formattedData);
       } catch (error) {

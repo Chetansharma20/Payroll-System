@@ -20,6 +20,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import API_ENDPOINTS from "../../config";
 
 const SalaryHeads = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -33,7 +34,7 @@ const SalaryHeads = () => {
   const fetchSalaryHeads = async () => {
     try {
       const result = await axios.post(
-        "http://localhost:5000/api/salaryheadsbycompany",
+        API_ENDPOINTS.SALARY_SETTING.FETCH_SALARY_HEADS,
         { CompanyId: companyData._id }
       );
       const formattedData = result.data.data.map((sal) => ({
@@ -58,7 +59,7 @@ const SalaryHeads = () => {
     const reqData = Object.fromEntries(formData.entries());
 
     try {
-      await axios.post("http://localhost:5000/api/addsalaryheads", {
+      await axios.post(API_ENDPOINTS.SALARY_SETTING.ADD_SALARY_HEAD, {
         ...reqData,
         CompanyId: companyData._id,
       });
@@ -78,7 +79,7 @@ const SalaryHeads = () => {
       return;
 
     try {
-      await axios.delete("http://localhost:5000/api/deletesalaryhead", {
+      await axios.delete(API_ENDPOINTS.SALARY_SETTING.DELETE_SALARY_HEAD, {
         data: { SalaryHeadId: id },
       });
       alert("Salary head deleted");
