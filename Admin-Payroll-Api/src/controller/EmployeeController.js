@@ -139,12 +139,12 @@ let fetchEmployee = async (req, res) => {
   }
 };
 
-// -------------------- Update Employee Documents --------------------
-// -------------------- Update Employee Documents --------------------
+
 let UpdateEmployee = async (req, res) => {
   try {
     const { EmployeeID } = req.body;
-    
+        console.log("Body:", req.body);
+console.log("Files:", req.files);
     // Validate EmployeeID
     if (!EmployeeID) {
       return res.status(400).json({ message: "EmployeeID is required" });
@@ -187,6 +187,8 @@ let UpdateEmployee = async (req, res) => {
       data: result,
       message: "Employee documents updated successfully",
     });
+
+
   } catch (error) {
     console.error("Error updating employee documents:", error);
     res.status(500).json({ 
