@@ -9,4 +9,4 @@ import Joi from "joi";
   CompanyState: Joi.string().required(),
   CompanyPassword: Joi.string().min(6).required(),
 });
-export {CompanyValidation}
+export { CompanyValidation }
