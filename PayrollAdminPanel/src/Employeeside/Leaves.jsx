@@ -6,12 +6,8 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
-  FormLabel,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography
@@ -28,19 +24,37 @@ import API_ENDPOINTS from '../config';
 
 const Leave = () => {
   const { EmployeeData } = useSelector((state) => state.employee);
-  console.log(EmployeeData.CompanyId)
-  
-  // const [employees, setEmployees] = useState([]);
-  // const [EmployeeId, setEmployeeId] = useState('');
   const [leaveData, setLeaveData] = useState([]);
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
   const [openDialog, setopenDialog] = useState(false);
-  // const [selectMonth, setSelectedMonth] = useState(dayjs());
-  // const [selectYear, setSelectedYear] = useState(dayjs());
 
   const openAddDialog = () => setopenDialog(true);
   const closeAddDialog = () => setopenDialog(false);
+
+  // ✅ Centralized fetch function
+  const fetchLeaves = async () => {
+    try {
+      const response = await axios.post(API_ENDPOINTS.EMPLOYEES.FETCH_LEAVE_BY_EMPLOYEE, {
+        EmployeeID: EmployeeData._id
+      });
+
+      const formattedData = response.data.data.map((emp) => ({
+        ...emp,
+        EmployeeName: emp.EmployeeName || 'Unnamed',
+        _id: emp._id
+      }));
+
+      setLeaveData(formattedData);
+    } catch (error) {
+      console.error('Failed to fetch leaves:', error);
+    }
+  };
+
+  // ✅ Fetch on component mount or when EmployeeData changes
+  useEffect(() => {
+    if (EmployeeData?._id) fetchLeaves();
+  }, [EmployeeData]);
 
   const submitLeave = async (e) => {
     e.preventDefault();
@@ -49,82 +63,25 @@ const Leave = () => {
     const FormattedFrom = fromDate.format('YYYY-MM-DD');
     const FormattedTo = toDate.format('YYYY-MM-DD');
 
-   
     try {
-      const leave = await axios.post(API_ENDPOINTS.LEAVE.ADD, {
+      await axios.post(API_ENDPOINTS.LEAVE.ADD, {
         ...reqdata,
-        // CompanyId: companyData._id,
         EmployeeID: EmployeeData._id,
         FromDate: FormattedFrom,
         ToDate: FormattedTo,
         CompanyId: EmployeeData.CompanyId
       });
-      console.log(leave)
-      alert('Leave added');
+
+      alert('Leave added successfully');
       setopenDialog(false);
+
+      // ✅ Immediately refresh leave list
+      await fetchLeaves();
     } catch (error) {
       const message = error?.response?.data?.message || 'Something went wrong';
       alert(message);
     }
   };
-
-  useEffect(() => {
-    const fetchLeaves = async () => {
-      try {
-        const response = await axios.post(API_ENDPOINTS.EMPLOYEES.FETCH_LEAVE_BY_EMPLOYEE, {
-          EmployeeID: EmployeeData._id,
-          
-        });
-
-        const formattedData = response.data.data.map((emp) => ({
-          ...emp,
-          EmployeeName: emp.EmployeeName || 'Unnamed',
-          _id: emp._id
-        }));
-
-        setLeaveData(formattedData);
-      } catch (error) {
-        console.error('Failed to fetch employees:', error);
-      }
-    };
-
-    if (EmployeeData?._id) {
-      fetchLeaves();
-    }
-  }, [EmployeeData]);
-
-  // useEffect(() => {
-  //   const fetchLeave = async () => {
-  //     if (!EmployeeId || !companyData?._id) {
-  //       setLeaveData([]);
-  //       return;
-  //     }
-
-  //     const month = selectMonth?.format('MM');
-  //     const year = selectYear?.format('YYYY');
-
-  //     try {
-  //       const url =
-  //         month && year
-  //           ? 'http://localhost:5000/api/fetchleavebymonthandyear'
-  //           : 'http://localhost:5000/api/fetchleavebycompanyid';
-
-  //       const response = await axios.post(url, {
-  //         EmployeeID: EmployeeId,
-  //         month,
-  //         year,
-  //         CompanyId: companyData._id
-  //       });
-
-  //       setLeaveData(response.data.data);
-  //     } catch (error) {
-  //       console.error('Error fetching attendance data:', error);
-  //       setLeaveData([]);
-  //     }
-  //   };
-
-  //   fetchLeave();
-  // }, [EmployeeId, selectMonth, selectYear, companyData?._id]);
 
   const columns = [
     {
@@ -147,9 +104,8 @@ const Leave = () => {
     },
     {
       field: 'LeaveStatus',
-      headerName: 'status',
-      flex: 1,
-      // renderCell: (params) => dayjs(params.row.ToDate).format('YYYY-MM-DD')
+      headerName: 'Status',
+      flex: 1
     }
   ];
 
@@ -166,20 +122,6 @@ const Leave = () => {
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker views={['month']} value={selectMonth} onChange={setSelectedMonth} label="Select Month" />
-            <DatePicker views={['year']} value={selectYear} onChange={setSelectedYear} label="Select Year" />
-          </LocalizationProvider> */}
-{/* 
-          <Autocomplete
-            options={employees}
-            getOptionLabel={(option) => option.EmployeeName || ''}
-            value={employees.find((emp) => emp._id === EmployeeId) || null}
-            onChange={(event, newValue) => setEmployeeId(newValue ? newValue._id : '')}
-            sx={{ minWidth: 250 }}
-            renderInput={(params) => <TextField {...params} label="Select Employee" />}
-          /> */}
-
           <Button variant="contained" sx={{ backgroundColor: '#2980b9' }} onClick={openAddDialog}>
             Add Leave
           </Button>
@@ -198,14 +140,6 @@ const Leave = () => {
         >
           <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>Add Leave</DialogTitle>
           <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* <Autocomplete
-              options={employees}
-              getOptionLabel={(option) => option.EmployeeName || ''}
-              value={employees.find((emp) => emp._id === EmployeeId) || null}
-              onChange={(event, newValue) => setEmployeeId(newValue ? newValue._id : '')}
-              renderInput={(params) => <TextField {...params} label="Select Employee" fullWidth required />}
-            /> */}
-
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="From Date"
@@ -235,15 +169,6 @@ const Leave = () => {
                 <MenuItem value="casual">Casual</MenuItem>
               </Select>
             </FormControl>
-{/* 
-            <FormControl>
-              <FormLabel>Leave Status</FormLabel>
-              <RadioGroup row name="LeaveStatus">
-                <FormControlLabel value="pending" control={<Radio size="small" />} label="Pending" />
-                <FormControlLabel value="approved" control={<Radio size="small" />} label="Approved" />
-                <FormControlLabel value="reject" control={<Radio size="small" />} label="Reject" />
-              </RadioGroup>
-            </FormControl> */}
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'flex-end', mt: 1 }}>
