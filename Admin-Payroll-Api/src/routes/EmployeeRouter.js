@@ -3,6 +3,8 @@ import { AddEmployee, DeleteEmployee, EmployeeLogin, fetchEmployee, getEmployeeB
 
 import { verifyToken, verifyRole } from "../MiddleWare/auth.js";
 import {upload} from '../MiddleWare/FileUploadMiddleWare.js'
+import { validateRequest } from "../MiddleWare/validateRequest.js";
+import { employeeValidaton } from "../validators/EmployeeValidation.js";
 const EmployeeRouter = express.Router();
 
 // File upload configuration
@@ -22,6 +24,7 @@ EmployeeRouter.post("/employeelogin", EmployeeLogin);
 // Add employee (usually Company adds employees)
 EmployeeRouter.post(
   "/addemployee",
+  validateRequest(employeeValidaton),
   verifyToken,
   verifyRole(["Company"]),
   employeeUploadFields,
