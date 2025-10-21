@@ -1,6 +1,6 @@
 import Joi from "joi";
 
- const employeeValidaton = Joi.object({
+ const EmployeeValidation = Joi.object({
   EmployeeName: Joi.string().min(3).max(50).required(),
   EmployeeEmail: Joi.string().email().required(),
   EmployeePhoneNo: Joi.string()
@@ -29,4 +29,4 @@ import Joi from "joi";
   PassBook: Joi.string().uri().optional(),
   Degree: Joi.string().uri().optional(),
 });
-export {employeeValidaton}
+export {EmployeeValidation}
