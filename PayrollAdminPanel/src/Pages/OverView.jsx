@@ -139,7 +139,7 @@ axios.post(API_ENDPOINTS.DASHBOARD.ATTENDANCE_COUNT, { CompanyId: companyData._i
   ];
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 1 } }}>
       {/* Enhanced Header */}
       <Box sx={{ mb: 4 }}>
         <Typography 

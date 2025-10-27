@@ -26,13 +26,13 @@ const CompanySchema = new mongoose.Schema(
       minlength: [5, "Address should have at least 5 characters"],
     },
 
-    RegistrationNo: {
-      type: String,
-      required: [true, "Registration number is required"],
-      trim: true,
-      unique: true,
-      match: [/^[A-Z0-9-]+$/, "Registration number must be alphanumeric"],
-    },
+    // RegistrationNo: {
+    //   type: String,
+    //   required: [true, "Registration number is required"],
+    //   trim: true,
+    //   unique: true,
+    //   match: [/^[A-Z0-9-]+$/, "Registration number must be alphanumeric"],
+    // },
 
     CompanyCity: {
       type: String,
