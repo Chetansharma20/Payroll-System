@@ -91,19 +91,20 @@ const BranchList = () => {
 
   return (
     <>
-      <Box sx={{ padding: 2 }}>
+      <Box sx={{ padding: { xs: 1, sm: 2 } }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-          <Button variant="contained" sx={{ backgroundColor: '#2980b9' }} onClick={openAddDialog}>
+          <Button variant="contained" sx={{ backgroundColor: '#2980b9', width: { xs: '100%', sm: 'auto' } }} onClick={openAddDialog}>
             Add Branch
           </Button>
         </Box>
-        <Box sx={{ height: 500, width: '100%' }}>
+        <Box sx={{ height: { xs: 400, sm: 500 }, width: '100%', overflowX: 'auto' }}>
           <DataGrid
             rows={AllBranches}
             columns={columns}
             pageSize={10}
             rowsPerPageOptions={[10, 25, 50]}
             disableSelectionOnClick
+            sx={{ minWidth: { xs: 700, sm: 'auto' } }}
           />
         </Box>
       </Box>

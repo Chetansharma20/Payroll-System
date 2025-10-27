@@ -180,32 +180,34 @@ const PayslipManagement = () => {
   }));
 
   return (
-    <Box sx={{ p: 3, backgroundColor: '#f5f6fa', minHeight: '100vh' }}>
-      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, backgroundColor: '#f5f6fa', minHeight: '100vh' }}>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
         Payslip Management
       </Typography>
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={openAddDialog}
-        startIcon={<AddCircleOutlineIcon />}
-        sx={{ mb: 2, mr: 2, borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
-      >
-        Generate Salary
-      </Button>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={openAddDialog}
+          startIcon={<AddCircleOutlineIcon />}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+        >
+          Generate Salary
+        </Button>
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={openAddDialog1}
-        startIcon={<AddCircleOutlineIcon />}
-        sx={{ mb: 2, borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
-      >
-        Generate Salary for All
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={openAddDialog1}
+          startIcon={<AddCircleOutlineIcon />}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+        >
+          Generate Salary for All
+        </Button>
+      </Box>
 
-      <Paper elevation={3} sx={{ borderRadius: 3, p: 2, backgroundColor: '#ffffff', height: 400 }}>
+      <Paper elevation={3} sx={{ borderRadius: 3, p: { xs: 1, sm: 2 }, backgroundColor: '#ffffff', height: { xs: 400, sm: 400 }, overflowX: 'auto' }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -214,7 +216,8 @@ const PayslipManagement = () => {
           disableRowSelectionOnClick
           sx={{
             border: 0,
-            fontSize: 15,
+            fontSize: { xs: 13, sm: 15 },
+            minWidth: { xs: 600, sm: 'auto' },
             '& .MuiDataGrid-row': { borderBottom: '1px solid #f0f0f0' },
             '& .MuiDataGrid-columnHeaders': {
               backgroundColor: '#f7f7f7',

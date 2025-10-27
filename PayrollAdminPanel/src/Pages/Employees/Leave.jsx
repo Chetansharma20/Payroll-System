@@ -213,8 +213,8 @@ const Leave = () => {
 
   return (
     <>
-      <Box sx={{ padding: 3 }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
+      <Box sx={{ padding: { xs: 1, sm: 2, md: 3 } }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
           Leave Tracking
         </Typography>
 
@@ -225,7 +225,8 @@ const Leave = () => {
             gap: 2,
             mb: 2,
             alignItems: 'center',
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
+            flexDirection: { xs: 'column', sm: 'row' }
           }}
         >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -234,12 +235,14 @@ const Leave = () => {
               value={selectMonth}
               onChange={setSelectedMonth}
               label="Select Month"
+              slotProps={{ textField: { fullWidth: true, sx: { width: { xs: '100%', sm: 'auto' } } } }}
             />
             <DatePicker
               views={['year']}
               value={selectYear}
               onChange={setSelectedYear}
               label="Select Year"
+              slotProps={{ textField: { fullWidth: true, sx: { width: { xs: '100%', sm: 'auto' } } } }}
             />
           </LocalizationProvider>
 
@@ -250,23 +253,23 @@ const Leave = () => {
             onChange={(e, newValue) =>
               setEmployeeId(newValue ? newValue._id : '')
             }
-            sx={{ minWidth: 250 }}
+            sx={{ minWidth: { xs: '100%', sm: 250 }, width: { xs: '100%', sm: 'auto' } }}
             renderInput={(params) => (
-              <TextField {...params} label="Select Employee" />
+              <TextField {...params} label="Select Employee" fullWidth />
             )}
           />
 
           <Button
             variant="contained"
-            sx={{ backgroundColor: '#2980b9' }}
+            sx={{ backgroundColor: '#2980b9', width: { xs: '100%', sm: 'auto' } }}
             onClick={() => setOpenDialog(true)}
           >
             Add Leave
           </Button>
         </Box>
 
-        <Box sx={{ height: 500, backgroundColor: 'white' }}>
-          <DataGrid rows={rows} columns={columns} pageSize={10} />
+        <Box sx={{ height: { xs: 400, sm: 500 }, width: '100%', backgroundColor: 'white', overflowX: 'auto' }}>
+          <DataGrid rows={rows} columns={columns} pageSize={10} sx={{ minWidth: { xs: 600, sm: 'auto' } }} />
         </Box>
       </Box>
 

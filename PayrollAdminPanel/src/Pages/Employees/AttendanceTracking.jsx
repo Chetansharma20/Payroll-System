@@ -152,18 +152,18 @@ const AttendanceTrack = () => {
   ];
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>Attendance Tracking</Typography>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Attendance Tracking</Typography>
 
         {/* Filters */}
         <Grid container spacing={2} alignItems="center" mb={3}>
-          <Grid item xs={12} sm={4} md={3}>
+          <Grid item xs={12} sm={6} md={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker views={["year", "month"]} label="Select Month & Year" value={selectDate} onChange={setSelectDate} renderInput={(params) => <TextField fullWidth {...params} />} />
+              <DatePicker views={["year", "month"]} label="Select Month & Year" value={selectDate} onChange={setSelectDate} renderInput={(params) => <TextField fullWidth {...params} />} slotProps={{ textField: { fullWidth: true } }} />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={12} sm={4} md={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <Autocomplete
               options={employees}
               getOptionLabel={(option) => option.EmployeeName || ""}
@@ -172,13 +172,13 @@ const AttendanceTrack = () => {
               renderInput={(params) => <TextField {...params} label="Select Employee" fullWidth />}
             />
           </Grid>
-          <Grid item xs={12} sm={4} md={2}>
-            <Button variant="contained" fullWidth onClick={fetchAttendance} sx={{ height: "100%" }}>Search</Button>
+          <Grid item xs={12} sm={12} md={2}>
+            <Button variant="contained" fullWidth onClick={fetchAttendance} sx={{ height: { xs: 40, md: "100%" } }}>Search</Button>
           </Grid>
         </Grid>
 
         {/* DataGrid */}
-        <Box sx={{ height: 450 }}>
+        <Box sx={{ height: { xs: 400, sm: 450 }, width: '100%', overflowX: 'auto' }}>
           <DataGrid
             rows={attendanceData.map((entry) => ({ id: entry._id, ...entry }))}
             columns={columns}
@@ -188,6 +188,7 @@ const AttendanceTrack = () => {
             sx={{
               borderRadius: 2,
               backgroundColor: "#f9fafb",
+              minWidth: { xs: 600, sm: 'auto' },
               "& .MuiDataGrid-columnHeaders": { backgroundColor: "#1976d2", color: "black", fontWeight: "bold" },
             }}
           />

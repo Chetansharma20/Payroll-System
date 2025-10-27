@@ -248,10 +248,13 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import MenuTree from './MenuTree';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../ReduxWork/UserSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -261,6 +264,13 @@ const SideBar = () => {
   const drawerWidth = 260;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -271,9 +281,35 @@ const SideBar = () => {
     navigate('/login');
   };
 
+  const drawer = (
+    <>
+      <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+        <Typography variant='h6' sx={{ fontWeight: 'bold', color: '#ecf0f1' }}>
+          PayRoll
+        </Typography>
+      </Box>
+
+      <List>
+        <ListItem>
+          <ListItemText>
+            <AdminPanelSettingsIcon sx={{ color: '#ecf0f1', mr: 1 }} />
+            Admin Panel
+          </ListItemText>
+        </ListItem>
+        <MenuTree />
+      </List>
+    </>
+  );
+
   return (
     <>
       <Drawer
+        variant={isMobile ? 'temporary' : 'permanent'}
+        open={isMobile ? mobileOpen : true}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -284,38 +320,34 @@ const SideBar = () => {
             color: '#ecf0f1',
           },
         }}
-        variant='permanent'
         anchor='left'
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
-          <Typography variant='h6' sx={{ fontWeight: 'bold', color: '#ecf0f1' }}>
-            PayRoll
-          </Typography>
-        </Box>
-
-        <List>
-          <ListItem>
-            <ListItemText>
-              <AdminPanelSettingsIcon sx={{ color: '#ecf0f1', mr: 1 }} />
-              Admin Panel
-            </ListItemText>
-          </ListItem>
-          <MenuTree />
-        </List>
+        {drawer}
       </Drawer>
 
       <Box component='main' sx={{ flexGrow: 1 }}>
         <AppBar
           position='fixed'
           sx={{
-            width: '84.5%',
+            width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+            ml: { xs: 0, md: `${drawerWidth}px` },
             px: 2,
             boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
             backgroundColor: '#2c3e50',
           }}
         >
           <Toolbar>
-            <IconButton size='large' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} />
+            {isMobile && (
+              <IconButton
+                color='inherit'
+                aria-label='open drawer'
+                edge='start'
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
             <Typography variant='h6' sx={{ flexGrow: 1 }}>
               Admin Portal
             </Typography>

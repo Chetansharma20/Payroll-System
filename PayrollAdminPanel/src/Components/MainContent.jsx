@@ -35,7 +35,7 @@ import SalarySettings from '../Pages/Employees/SalarySettings'
 import UnifiedLogin from './UnifiedLogin'
 const MainContent = () => {
   return (
-   <Box component="main" sx={{flexGrow:1, marginTop:10}}>
+   <Box component="main" sx={{flexGrow:1, marginTop:10, p: { xs: 1, sm: 2, md: 3 }}}>
 <Routes>
     <Route path='/dashboard/overview' element={<OverView/>}/>
     <Route path='/dashboard/payrollsummary' element={<PayrollSummary/>}/>

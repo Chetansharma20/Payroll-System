@@ -136,12 +136,12 @@ await axiosInstance.post(API_ENDPOINTS.SALARY_SETTING.SAVE_SETTINGS, payload);
   ];
 
   return (
-    <Paper elevation={4} sx={{ p: 4, mt: 4, width: '70vw', height: '35vw', marginRight: '50px' }}>
-      <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+    <Paper elevation={4} sx={{ p: { xs: 2, sm: 3, md: 4 }, mt: { xs: 2, md: 4 }, width: { xs: '100%', sm: '90%', md: '70vw' }, height: 'auto', minHeight: { xs: 'auto', md: '35vw' }, marginRight: { xs: 0, md: '50px' } }}>
+      <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2', fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
         Salary Settings
       </Typography>
 
-      <Box sx={{ mb: 3, width: 300 }}>
+      <Box sx={{ mb: 3, width: { xs: '100%', sm: 300 } }}>
         <FormControl fullWidth>
           <InputLabel id="employee-select-label">Select Employee</InputLabel>
           <Select
@@ -158,19 +158,21 @@ await axiosInstance.post(API_ENDPOINTS.SALARY_SETTING.SAVE_SETTINGS, payload);
           </Select>
         </FormControl>
         {selectedEmployee && (
-          <Typography sx={{ mt: 2 }}>
+          <Typography sx={{ mt: 2, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
             <b>Selected Employee:</b> {selectedEmployee.EmployeeName}
           </Typography>
         )}
       </Box>
 
-      <Box sx={{ height: 340, width: '100%' }}>
+      <Box sx={{ height: { xs: 400, sm: 340 }, width: '100%', overflowX: 'auto' }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1, mb: 2 }}>
           <Button
             variant="contained"
             color="primary"
             onClick={handleSave}
             disabled={!selectedEmpId}
+            fullWidth={false}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             Save
           </Button>
@@ -182,6 +184,7 @@ await axiosInstance.post(API_ENDPOINTS.SALARY_SETTING.SAVE_SETTINGS, payload);
           pageSize={10}
           rowsPerPageOptions={[5, 10, 20]}
           disableSelectionOnClick
+          sx={{ minWidth: { xs: 700, sm: 'auto' } }}
         />
       </Box>
     </Paper>

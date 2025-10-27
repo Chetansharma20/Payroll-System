@@ -141,8 +141,8 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
 
   return (
     <>
-      <Box sx={{ height: '100vh', width: '80vw', display: 'flex' }}>
-        <Box sx={{ padding: 2, width: '50%' }}>
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
+        <Box sx={{ padding: 2, width: { xs: '100%', md: '50%' } }}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
             <Button variant="contained" sx={{ backgroundColor: '#2980b9' }} onClick={openAddDialog}>Add Department</Button>
           </Box>
@@ -156,7 +156,7 @@ const result = await axios.post(API_ENDPOINTS.DEPARTMENT.ADD, { ...departmentdat
             />
           </Box>
         </Box>
-        <Box sx={{ padding: 2, width: '50%' }}>
+        <Box sx={{ padding: 2, width: { xs: '100%', md: '50%' } }}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
             <Button variant="contained" sx={{ backgroundColor: '#2980b9' }} onClick={openAddDialog1}>Add Designation</Button>
           </Box>

@@ -76,7 +76,7 @@ catch(error)
 name='CompanyName' 
 type="text" 
 required />
-<TextField label="Company Name" 
+<TextField label="Company Email" 
 name='CompanyEmail' 
 type="email" 
 required />
