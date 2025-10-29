@@ -42,8 +42,9 @@ let AddEmployee = async (req, res) => {
       CompanyId,
       EmployeePhoneNo,
       BranchName,
+      BranchId,
     } = req.body;
-
+console.log(req.body)
     const EmployeePhoto = req.files?.EmployeePhoto?.[0]?.path || null;
     const AdhaarCard = req.files?.AdhaarCard?.[0]?.path || null;
     const PanCard = req.files?.PanCard?.[0]?.path || null;
@@ -74,10 +75,11 @@ let AddEmployee = async (req, res) => {
       CompanyId,
       EmployeePhoneNo,
       BranchName,
+      BranchId,
       EmployeePassword: encryptPassword,
       role: "Employee",
     });
-
+console.log(result)
     res.status(200).json({
       data: {
         _id: result._id,

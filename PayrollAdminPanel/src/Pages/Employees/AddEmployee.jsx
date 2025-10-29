@@ -54,7 +54,17 @@ const [degree, setDegree] = useState(null);
   const SubmitEmployeeData = async (e) => {
     e.preventDefault();
     let formData = new FormData(e.target);
+    
     let reqData = Object.fromEntries(formData.entries());
+    // let reqData = Object.fromEntries(formData.entries());
+
+// Fix the BranchId & BranchName before sending
+if (reqData.BranchId) {
+  const branch = JSON.parse(reqData.BranchId);
+  reqData.BranchId = branch.id;
+  reqData.BranchName = branch.name;
+}
+
     console.log('REQ', reqData);
 
     try {
@@ -223,15 +233,20 @@ useEffect(()=>
     {/* <TextField size="small" label="Department" name="EmployeeDepartment" type="text" required /> */}
     <TextField size="small" label="Employee Type" name="EmployeeType" type="text" required />
     {/* <TextField size="small" label="Company Id" name="CompanyId" type="text" required /> */}
+<FormControl size="small">
+  <Select name="BranchId" required defaultValue="" displayEmpty>
+    <MenuItem disabled value="">Select Branch</MenuItem>
+    {getAllBranch.map((br) => (
+      <MenuItem
+        key={br._id}
+        value={JSON.stringify({ id: br._id, name: br.BranchName })} // send both
+      >
+        {br.BranchName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
 
-    <FormControl size="small">
-      <Select name="BranchId" required defaultValue="" displayEmpty>
-        <MenuItem disabled value="">Select Branch</MenuItem>
-        {getAllBranch.map((br) => (
-          <MenuItem key={br._id} value={br.BranchName}>{br.BranchName}</MenuItem>
-        ))}
-      </Select>
-    </FormControl>
 <Button
   onClick={openAddDialog}
   variant="outlined"

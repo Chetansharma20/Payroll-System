@@ -105,10 +105,10 @@ const EmployeeSchema = new mongoose.Schema(
 
     EmployeeType: {
       type: String,
-      enum: {
-        values: ["Full-Time", "Part-Time", "Intern", "Contract"],
-        message: "Invalid employee type",
-      },
+      // enum: {
+      //   values: ["Full-Time", "Part-Time", "Intern", "Contract"],
+      //   message: "Invalid employee type",
+      // },
       required: [true, "Employee type is required"],
     },
 
